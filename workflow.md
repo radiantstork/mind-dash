@@ -47,7 +47,7 @@
 ---
 
 ## Project configuration
-#### 0. Desired code structuring (approx.)
+### 0. Desired code structuring (approx.)
 ```
 fullstack-app/
 │── server/                    # Django backend
@@ -82,7 +82,7 @@ fullstack-app/
 │── README.md                  # Project documentation
 ```
 
-#### 1. Configurare frontend
+### 1. Configurare frontend
 Installer-ul `nvm` (care vine de la node version manager) este folosit sa instalati toate chestiile legate de NodeJS; noi avem nevoie doar de `npm` cu care instalam React si diferite biblioteci 3rd party pentru el
 - [Windows](https://www.freecodecamp.org/news/node-version-manager-nvm-install-guide/)
 
@@ -111,7 +111,7 @@ npm -v
 
 De asemenea, creati in directorul `client` un fisier numit `.env`. In el vom stoca parole, string-uri de conexiune etc. folositoare aplicatiei. Daca il creati unde v-am spus eu, nu va fi pus pe GitHub ci va fi ignorat automat de `git`. Momentan, nu puneti nimic in el.
 
-#### 2. Configurare backend
+### 2. Configurare backend
 - Instalati `pip` global (probabil il aveti deja de la PA). Verificati cu urmatoarea comanda:
 ```sh
 pip --version
@@ -126,7 +126,7 @@ pipenv shell
 
 - De asemenea, creati in directorul `server` (nu in `server/server`) un fisier numit `.env` similar celui din front-end. Continutul lui vi-l voi pune pe whapp.
 
-#### 3. Baza de date
+### 3. Baza de date
 - Instalati-va PostgreSQL. Am incredere ca va descurcati. Ca sa testati, rulati:
 ```sh
 psql -h centerbeam.proxy.rlwy.net -U postgres -p 10086 -d railway
@@ -135,7 +135,7 @@ psql -h centerbeam.proxy.rlwy.net -U postgres -p 10086 -d railway
 - De asemenea, am facut migratiile initiale asa ca exista deja niste tabele in baza de date (nu stiu care-i treaba cu ele). Ele sunt integrate deja in **workflow**.
 
 
-#### 4. Instalare dependente si rulare proiect
+### 4. Instalare dependente si rulare proiect
 Am instalat React cu framework-ul **Vite** special configurat pentru Typescript, iar Django cu `pipenv`. Tot ce trebuie voi sa faceti e sa instalati pachetele local (care vor fi intr-un folder numit `node_modules` ce nu va aparea in github (in `client`), respectiv `.venv` (in `server`)). Pentru asta, deschideti intr-un terminal / cmd proiectul si rulati:
 
 ```sh
@@ -152,7 +152,7 @@ npm run start_server
 npm run start_client
 ```
 
-#### 5. Testare automata
+### 5. Testare automata
 Pentru Django, toate testele vor fi scrise in folderul `tests` apoi rulate cu:
 ```sh
 pipenv run pytest -v
@@ -163,7 +163,7 @@ Pentru React, vom folosi Vitest (probabil si alte pachete). Ele vor fi scrise in
 npm run test
 ```
 
-#### 6. Testare API
+### 6. Testare API
 - Pentru a testa backend-ul vom folosi Postman, o aplicatie care poate fi accesata din browser si cu care se poate testa rapid un API. In plus, se poate face instant si documentatia la acel API.
 - V-am trimis invitatii pe email pentru workspace-ul in care vom testa acest API.
 
