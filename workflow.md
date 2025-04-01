@@ -2,13 +2,13 @@
 - [Table of contents](#table-of-contents)
   - [Workflow](#workflow)
   - [Project configuration](#project-configuration)
-      - [0. Desired code structuring (approx.)](#0-desired-code-structuring-approx)
-      - [1. Configurare frontend](#1-configurare-frontend)
-      - [2. Configurare backend](#2-configurare-backend)
-      - [3. Baza de date](#3-baza-de-date)
-      - [4. Instalare dependente si rulare proiect](#4-instalare-dependente-si-rulare-proiect)
-      - [5. Testare automata](#5-testare-automata)
-      - [6. Testare API](#6-testare-api)
+    - [0. Desired code structuring (approx.)](#0-desired-code-structuring-approx)
+    - [1. Configurare frontend](#1-configurare-frontend)
+    - [2. Configurare backend](#2-configurare-backend)
+    - [3. Baza de date](#3-baza-de-date)
+    - [4. Instalare dependente si rulare proiect](#4-instalare-dependente-si-rulare-proiect)
+    - [5. Testare automata](#5-testare-automata)
+    - [6. Testare API](#6-testare-api)
   - [Resurse de invatare](#resurse-de-invatare)
     - [Django](#django)
     - [React](#react)
@@ -30,19 +30,9 @@
   python manage.py makemigrations
   python manage.py migrate
 ```
-1. Push the branch to GitHub (to prevent code deletion from **conflicts**)
-2. Create **pull request** (no deletion) & merge to main & announce the teammates
-3. Pull the main branch code locally & run `npm install`
-
-
-
----
-
-- Simulate project configurations:
-  - Install the dependencies
-  - Run the project (both frontend and backend)
-  - Install a package (frontend)
-  - Install a package (backend)
+6. Push the branch to GitHub (to prevent code deletion from **conflicts**) & **announce `.env` file change**
+7. Create **pull request** (no deletion) & merge to main & announce the teammates
+8. Pull the main branch code locally & run `npm install`
 
 ---
 
@@ -52,6 +42,7 @@
 fullstack-app/
 │── server/                    # Django backend
 │   ├── manage.py              # Django project manager
+│   ├── tests/                 # Django tests
 │   ├── server/                # Main Django project settings
 │   │   ├── __init__.py
 │   │   ├── settings.py        # Django settings
@@ -67,18 +58,19 @@ fullstack-app/
 │   │   ├── permissions.py     # Custom permissions
 │   │   ├── tests.py           # Unit tests
 │── frontend/                  # React frontend
-│   ├── public/                # Static assets
+│   ├── public/                # Static assets (images, favicons, fonts etc.)
 │   ├── src/                   # Main React source code
 │   │   ├── components/        # Reusable components
 │   │   ├── pages/             # Page components
 │   │   ├── hooks/             # Custom hooks
+│   │   ├── tests/             # Custom tests
 │   │   ├── context/           # React Context API
 │   │   ├── services/          # API calls (fetching Django REST API)
 │   │   ├── App.js             # Main React component
 │   │   ├── index.js           # React entry point
-│── package.json               # Frontend dependencies
 │── .env                       # Environment variables
 │── .gitignore                 # Git ignore file
+│── package.json               # Frontend dependencies
 │── README.md                  # Project documentation
 ```
 
@@ -109,22 +101,18 @@ node -v
 npm -v
 ```
 
-De asemenea, creati in directorul `client` un fisier numit `.env`. In el vom stoca parole, string-uri de conexiune etc. folositoare aplicatiei. Daca il creati unde v-am spus eu, nu va fi pus pe GitHub ci va fi ignorat automat de `git`. Momentan, nu puneti nimic in el.
-
 ### 2. Configurare backend
 - Instalati `pip` global (probabil il aveti deja de la PA). Verificati cu urmatoarea comanda:
 ```sh
 pip --version
 ```
 
-- Instalati `pipenv` pentru automatizarea dependentelor (cu el vom instala django si alte pachete utile; un fel de `npm`), apoi activati-l:
+- Instalati `pipenv` pentru automatizarea dependentelor (cu el vom instala django si alte pachete utile; un fel de `npm`):
 ```sh
 pip install pipenv
-pipenv shell
-# ignorati asta: pipenv install django djangorestframework django-cors-headers
 ```
 
-- De asemenea, creati in directorul `server` (nu in `server/server`) un fisier numit `.env` similar celui din front-end. Continutul lui vi-l voi pune pe whapp.
+
 
 ### 3. Baza de date
 - Instalati-va PostgreSQL. Am incredere ca va descurcati. Ca sa testati, rulati:
@@ -142,18 +130,27 @@ Am instalat React cu framework-ul **Vite** special configurat pentru Typescript,
 npm install
 ```
 
-- Pentru a vedea proiectul in actiune (frontend si backend simultan), rulati:
+- Creati in directorul proiectului un fisier numit `.env`. In el vom stoca parole, string-uri de conexiune etc. folositoare aplicatiei. Daca il creati unde v-am spus eu, nu va fi pus pe GitHub ci va fi ignorat automat de `git`. Continutul lui vi-l voi pune pe whapp.
+
+- **IMPORTANT**: Inainte de fiecare primă executare a proiectului rulati
+```sh
+npm run prepare
+```
+ca sa puteti activa environment-ul virtual de python. Am facut asa pentru ca python-ul de pe calculatoarele voastre sa nu fie umplut aiurea de pachete pe care le veti folosi doar la acest proiect si sa va ocupe spatiu (tot va ocupa tho ca trb sa setati un flag, dar e mai usor de eliberat). Asa, cu aceasta comanda doar setati environment-ul de python corespunzator proiectului si rulati python-ul lui, fara sa fie afectat cel principal.
+
+- Pentru a vedea proiectul in actiune (frontend si backend in acelasi terminal), creati un fisier `.env` in `server` si puneti continutul de pe whapp in ea, apoi rulati rulati:
 ```sh
 npm run dev
 ```
-- Daca vreti separat, deschideti 2 terminale si rulati in fiecare o comanda:
+
+- **Daca vreti separat** (recomandat), deschideti 2 terminale si rulati in fiecare o comanda:
 ```sh
 npm run start_server
 npm run start_client
 ```
 
 ### 5. Testare automata
-Pentru Django, toate testele vor fi scrise in folderul `tests` apoi rulate cu:
+Pentru Django, toate testele vor fi scrise in folderul `server/tests` apoi rulate cu:
 ```sh
 pipenv run pytest -v
 ```

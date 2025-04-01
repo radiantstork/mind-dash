@@ -1,10 +1,11 @@
 {
     "scripts": {
-        "install_server": "cd server && pipenv install",
+        "install_server": "cd server && pipenv install & cd ..",
         "install": "npm install --prefix client && npm run install_server",
-        "start_server": "cd server && python manage.py runserver",
-        "start_client": "cd client && npm run dev",
+        "prepare": "cd server && pipenv shell && cd ..",
+        "start_server": "python server/manage.py runserver",
+        "start_client": "npm run dev --prefix client",
         "dev": "npm run start_client & npm run start_server",
-        "test": "npm run test --prefix client && pipenv run pytest -v --prefix server"
+        "test": "npm run test --prefix client && cd server && pipenv run pytest -v && cd .."
     }
 }
