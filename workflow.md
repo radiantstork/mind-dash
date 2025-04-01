@@ -127,7 +127,7 @@ psql -h centerbeam.proxy.rlwy.net -U postgres -p 10086 -d railway
 - Am instalat React cu framework-ul **Vite** special configurat pentru Typescript, iar Django cu `pipenv`. Tot ce trebuie voi sa faceti e sa instalati pachetele local (care vor fi intr-un folder numit `node_modules` ce nu va aparea in github (in `client`), respectiv `.venv` (in `server`)). Pentru asta, deschideti intr-un terminal / cmd proiectul si rulati:
 
 ```sh
-npm install
+npm run install
 ```
 
 - Creati in directorul proiectului un fisier numit `.env`. In el vom stoca parole, string-uri de conexiune etc. folositoare aplicatiei. Daca il creati unde v-am spus eu, nu va fi pus pe GitHub ci va fi ignorat automat de `git`. Continutul lui vi-l voi pune pe whapp.
@@ -135,14 +135,16 @@ npm install
 - Pentru a vedea proiectul in actiune, deschideti 2 terminale in directorul proiectului si rulati:
 ```sh
 cd server && pipenv shell
-npm run python manage.py runserver
+python manage.py runserver
 ```
+apoi introduceti in URL link-ul http://localhost:8000/api,
 
 respectiv
 
 ```sh
 cd client && npm run dev
 ```
+apoi introduceti in URL link-ul din terminal.
 
 - **IMPORTANT**: Inainte de fiecare primă executare a server-ului (**doar prima**) rulati se va rula `pipenv shell` ca sa puteti activa environment-ul virtual de python. Am facut asa pentru ca python-ul de pe calculatoarele voastre sa nu fie umplut aiurea de pachete pe care le veti folosi doar la acest proiect si sa va ocupe spatiu (tot va ocupa tho ca trb sa setati un flag, dar e mai usor de eliberat). Asa, cu aceasta comanda doar setati environment-ul de python corespunzator proiectului si rulati python-ul lui, fara sa fie afectat cel principal.
 
