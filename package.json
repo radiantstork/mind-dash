@@ -1,7 +1,8 @@
 {
     "scripts": {
-        "install_server": "cd server && pipenv install & cd ..",
-        "install": "npm install --prefix client && npm run install_server",
+        "install_server": "cd server && pipenv install && cd ..",
+        "install_client": "npm install --prefix client",
+        "install": "npm run install_server && npm run install_client",
         "prepare": "cd server && pipenv shell && cd ..",
         "start_server": "python server/manage.py runserver",
         "start_client": "npm run dev --prefix client",
