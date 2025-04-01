@@ -9,7 +9,6 @@
     - [3. Baza de date](#3-baza-de-date)
     - [4. Instalare dependente si rulare proiect](#4-instalare-dependente-si-rulare-proiect)
     - [5. Testare automata](#5-testare-automata)
-    - [6. Testare API](#6-testare-api)
   - [Resurse de invatare](#resurse-de-invatare)
     - [Django](#django)
     - [React](#react)
@@ -173,10 +172,6 @@ Pentru React, vom folosi Vitest (probabil si alte pachete). Ele vor fi scrise in
 ```sh
 npm run test
 ```
-
-### 6. Testare API
-- Pentru a testa backend-ul vom folosi Postman, o aplicatie care poate fi accesata din browser si cu care se poate testa rapid un API. In plus, se poate face instant si documentatia la acel API.
-- V-am trimis invitatii pe email pentru workspace-ul in care vom testa acest API.
 
 ## Resurse de invatare
 - In principiu, vom invata cu totii din mers si cu ChatGPT, asa ca aici va pun doar asa la misto niste chestii.
