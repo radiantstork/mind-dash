@@ -42,6 +42,7 @@
 ## Project structure
 
 - **UITATI-VA LA MESAJUL FIXAT DE PE GRUP!!!**
+- **Daca vreti sa faceti vibe coding aratati-i documentul asta AI-ului ca sa nu strice chestii prin proiect**
 - Proiectul va consta in diferite jocuri care sa dezvolte abilitati congnitive. Pentru asta vom avea o pagina principala (+ cele de autentificare), o pagina cu toate jocurile din care user-ul sa-si aleaga, o pagina cu statistici pentru fiecare joc in parte si cate o pagina speciala pentru fiecare joc.
 - Fiecare joc are asociata o pagina, un endpoint unde se duc rezultatele si o tabela in baza de date in care se stocheaza datele.
 - Userii sunt de 2 tipuri: autentificati si neautentificati.
@@ -112,10 +113,12 @@ npm -v
 ```
 
 ### 2. Configurare backend
-- Instalati `pip` global (probabil il aveti deja de la PA). Verificati cu urmatoarea comanda:
+- Instalati `python 3.12` (probabil il aveti deja de la PA). Verificati cu urmatoarea comanda:
 ```sh
+python 3.12 --version
 pip --version
 ```
+- Recomandarea mea e sa creati un environment virtual de python local, in proiect, ca sa nu se stocheze pachetele pe care le instalati pe calculatorul vostru, ci doar intr-un folder local. Daca faceti asa, puneti-i numele `python_env`.
 
 - Instalati `pipenv` pentru automatizarea dependentelor (cu el vom instala django si alte pachete utile; un fel de `npm`):
 ```sh
@@ -161,7 +164,8 @@ cd client && npm run dev
 ```
 apoi introduceti in URL link-ul din terminal.
 
-> **IMPORTANT**: Inainte de fiecare primă executare a server-ului (**doar prima**) rulati se va rula `pipenv shell` ca sa puteti activa environment-ul virtual de python. Am facut asa pentru ca python-ul de pe calculatoarele voastre sa nu fie umplut aiurea de pachete pe care le veti folosi doar la acest proiect si sa va ocupe spatiu (tot va ocupa tho, ca trb sa setati un flag, dar e mai usor de eliberat). Asa, cu aceasta comanda doar setati environment-ul de python corespunzator proiectului si rulati python-ul lui, fara sa fie afectat cel principal.
+> **IMPORTANT**: Inainte de fiecare primă executare a server-ului (**doar prima**) rulati `pipenv shell` ca sa puteti activa environment-ul virtual de python. Am facut asa ca sa putem sincroniza cat mai usor pachetele instalate de python intre noi. Ca urmare, atunci cand nu va ruleaza server-ul, iar in terminal va scrie ca nu aveti un pachet, rulati `pipenv install`.
+
 
 ### 5. Testare automata
 Pentru Django, toate testele vor fi scrise in folderul `server/tests` apoi rulate cu:
