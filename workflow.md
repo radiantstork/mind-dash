@@ -41,6 +41,7 @@
 
 ## Project structure
 
+- **UITATI-VA LA MESAJUL FIXAT DE PE GRUP!!!**
 - Proiectul va consta in diferite jocuri care sa dezvolte abilitati congnitive. Pentru asta vom avea o pagina principala (+ cele de autentificare), o pagina cu toate jocurile din care user-ul sa-si aleaga, o pagina cu statistici pentru fiecare joc in parte si cate o pagina speciala pentru fiecare joc.
 - Fiecare joc are asociata o pagina, un endpoint unde se duc rezultatele si o tabela in baza de date in care se stocheaza datele.
 - Userii sunt de 2 tipuri: autentificati si neautentificati.
