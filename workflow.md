@@ -137,7 +137,7 @@ psql -h centerbeam.proxy.rlwy.net -U postgres -p 10086 -d railway
 - Migratii (nu cred ca o sa foloseasca ca avem aceeasi baza de date):
 ```sh
   # deschideti folderul `server` din proiect in terminal sau cmd
-  python manage.py makemigrations
+  python manage.py makemigrations api
   python manage.py migrate
 ```
 
