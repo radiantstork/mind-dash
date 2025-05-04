@@ -1,0 +1,22 @@
+/* Background.module.css */
+.background {
+    background-color: #0d0d0d; /* Dark background */
+    /* height: 130vh; */
+  }
+  
+  .star {
+    position: absolute;
+    background-color: white;
+    border-radius: 50%;
+  }
+
+  /* @keyframes twinkle {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; }
+  }
+  
+  .star {
+    animation: twinkle infinite;
+    animation-duration: calc(3s + 2s * var(--rand));
+  }
+   */

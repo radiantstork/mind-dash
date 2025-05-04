@@ -33,6 +33,7 @@ ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost").split(",")
 
 INSTALLED_APPS = [
     "rest_framework",
+    "scores",
     "corsheaders",
     'django.contrib.admin',
     'django.contrib.auth',
