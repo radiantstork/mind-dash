@@ -1,8 +1,11 @@
-import customFetch from "./custom_fetch";
 
-export async function getCsrfToken() {
-    const response = await customFetch.post('/api/auth/login/', {
-      credentials: 'include',
+export function getCookie(name: string) {
+  let value = null;
+  if (document.cookie && document.cookie !== '') {
+    document.cookie.split(';').forEach(cookie => {
+      const [key, val] = cookie.trim().split('=');
+      if (key === name) value = decodeURIComponent(val);
     });
-    return response.data.csrfToken;
   }
+  return value;
+}

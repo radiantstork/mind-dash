@@ -6,6 +6,7 @@ import App from './App.tsx'
 import { BrowserRouter } from "react-router-dom";
 import axios from 'axios';
 import { UserProvider } from './context/UserContext.tsx';
+import 'react-toastify/dist/ReactToastify.css';
 
 console.log(axios.get('http://127.0.0.1:8000/api/').then(res => res.data))
 
