@@ -34,15 +34,17 @@ ALLOWED_HOSTS = ['*']
 INSTALLED_APPS = [
     "rest_framework",
     "corsheaders",
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'api.apps.ApiConfig',
+    'django.contrib.admin',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'api.apps.ApiConfig',
     'django_extensions',
 ]
+
+CORS_ALLOW_CREDENTIALS = True
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -84,9 +86,11 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 SESSION_SAVE_EVERY_REQUEST = True
-SESSION_COOKIE_HTTPONLY = True
-# SESSION_COOKIE_SECURE = True  # Enable in production with HTTPS
-CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = False
+SESSION_COOKIE_SECURE = False
+SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_SECURE = False
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
@@ -142,9 +146,13 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173"
 ]
 
-CORS_ALLOW_CREDENTIALS = True
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173"    # match your frontend
+]
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": [],
-    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.AllowAny"],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ],
 }

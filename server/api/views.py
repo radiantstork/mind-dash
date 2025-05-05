@@ -14,9 +14,13 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import authenticate, login, logout
 from .serializers.serializers import UserSerializer, UserRegistrationSerializer
+from .serializers import UserSerializer, UserRegistrationSerializer
+from rest_framework.permissions import IsAuthenticated
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.http import JsonResponse
+from django.utils.decorators import method_decorator
 
-
-def index(request):
+def index(_):
     return HttpResponse("Hello, world. You're at the app index.")
 
 
@@ -103,14 +107,33 @@ def score_distribution(request):
         'user_score': user_score.score if user_score else None
     })
 
+@ensure_csrf_cookie
+def get_csrf_token(request):
+    return JsonResponse({"message": "CSRF cookie set"})
+
+
+@method_decorator(ensure_csrf_cookie, name='dispatch')
+class ProtectedDataView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        print("User:", request.user)
+        print("Is Authenticated:", request.user.is_authenticated)
+        print("Session key:", request.session.session_key)
+        print(request.data)
+        # Only authenticated users can access this
+        return Response({
+            'data': 'This is protected data',
+            'user': request.user.username
+        }, status=status.HTTP_200_OK)
+
 class LoginView(APIView):
     def post(self, request):
-        print(request.data)
-        username = request.data.get('body').get('username')
-        password = request.data.get('body').get('password')
-
+        username = request.data.get('username')
+        password = request.data.get('password')
+        
         user = authenticate(request, username=username, password=password)
-
+        
         if user is not None:
             login(request, user)
             serializer = UserSerializer(user)
@@ -127,7 +150,7 @@ class LoginView(APIView):
 
 class RegisterView(APIView):
     def post(self, request):
-        serializer = UserRegistrationSerializer(data=request.data["body"])
+        serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(
@@ -139,9 +162,16 @@ class RegisterView(APIView):
 
 
 class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
+        print("User:", request.user)
+        print("Is Authenticated:", request.user.is_authenticated)
+        print("Session key:", request.session.session_key)
         logout(request)
         return Response(
             {'detail': 'Successfully logged out'},
             status=status.HTTP_200_OK
         )
+
+

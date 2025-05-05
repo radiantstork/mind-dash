@@ -4,6 +4,8 @@ import { useUserContext } from '../context/UserContext';
 import { useNavigate } from 'react-router-dom';
 import customFetch from '../services/custom_fetch';
 import { catchAxiosError } from '../services/catch_axios_error';
+import { getCookie } from '../services/crsf_token';
+import { toast } from 'react-toastify';
 
 interface LoginResponse {
   user: {
@@ -25,9 +27,16 @@ export default function LoginForm() {
 
     try {
       setLoading(true);
+      await customFetch.get('/api/csrf/');
+
       const response = await customFetch.post('/api/auth/login/', {
-        credentials: 'include',
-        body: { username, password },
+        username,
+        password
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCookie("csrftoken")
+        }
       });
       setLoading(false);
 
@@ -38,8 +47,9 @@ export default function LoginForm() {
         id: data.user.id,
         username: data.user.username,
       });
-      console.log(data.user)
+      // Redirect to home or previous page
       navigate("/");
+      toast.success("Logged in successfully");
     } catch (err) {
       console.log(err)
       catchAxiosError(err);
