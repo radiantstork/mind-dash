@@ -1,12 +1,19 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+
+import styles from "./NumberMemoryTestDefault.module.css";
+import TestArea from "../../components/TestArea/TestArea.tsx";
+import IntroScreen from "../../components/IntroScreen/IntroScreen.tsx";
+import ResultsScreen from "../../components/ResultsScreen/ResultsScreen.tsx";
+import Hearts from "../../components/Hearts/Hearts.tsx";
+import SubmitButton from "../../components/SubmitButton/SubmitButton.tsx";
 
 const NumberMemoryTest: React.FC = () => {
     const [level, setLevel] = useState(3);
     const [lives, setLives] = useState(3);
     const [number, setNumber] = useState("");
-    const [showNumber, setShowNumber] = useState(false);
     const [userInput, setUserInput] = useState("");
-    const [status, setStatus] = useState<"idle" | "playing" | "over">("idle");
+    const [status, setStatus] = useState<"idle" | "input" | "over">("idle");
+    const [showNumber, setShowNumber] = useState(false);
 
     const generateRandNum = (length: number): string => {
         let result = "";
@@ -16,92 +23,98 @@ const NumberMemoryTest: React.FC = () => {
         return result;
     };
 
-    const startLevel = () => {
-        const newNum = generateRandNum(level);
+    const startGame = () => {
+        setLevel(1);
+        setLives(3);
+        setStatus("input");
+        const newNum = generateRandNum(1);
         setNumber(newNum);
-        setShowNumber(true);
         setUserInput("");
-        setStatus("playing");
+        setShowNumber(true);
 
         setTimeout(() => {
             setShowNumber(false);
-        }, level * 1000);
-    };
+        }, 1000);
+    }
+
+    const nextLevel = (newLevel: number) => {
+        const newNum = generateRandNum(newLevel);
+        setNumber(newNum);
+        setUserInput("");
+        setShowNumber(true);
+
+        setTimeout(() => {
+            setShowNumber(false);
+        }, newLevel * 1000);
+    }
 
     const handleSubmit = () => {
         if (userInput === number) {
-        setLevel(prev => prev + 1);
+            const next = level + 1;
+            setLevel(next);
+            nextLevel(next);
         } else {
             if (lives > 1) {
                 setLives(prev => prev - 1);
-
-                const newNum = generateRandNum(level);
-                setNumber(newNum);
-                setUserInput("");
-                setShowNumber(true);
-
-                setTimeout(() => {
-                    setShowNumber(false);
-                    setStatus("playing");
-                }, level * 1000);
+                nextLevel(level);
             } else {
                 setStatus("over");
             }
         }
-    };
+    }
 
-    const startGame = () => {
-        setLevel(3);
+    const restartTest = () => {
+        setStatus("idle");
+        setLevel(1);
         setLives(3);
-        setStatus("playing");
-        startLevel();
-    };
-
-    useEffect(() => {
-        if (status === "playing") {
-        startLevel();
-        }
-    }, [level]);
+        setNumber("");
+        setUserInput("");
+        setShowNumber(false);
+    }
 
     return (
-        <div style={{ textAlign: "center", marginTop: "100px" }}>
-          <h1>Number Memory Test</h1>
-    
-          {status === "idle" && (
-            <>
-              <button onClick={startGame}>Start Game</button>
-            </>
-          )}
-    
-          {status === "over" && (
-            <>
-              <p>You reached level {level}</p>
-              <button onClick={startGame}>Start Game</button>
-            </>
-          )}
-    
-          {status === "playing" && (
-            <>
-              <h2>Level {level}</h2>
-              <h3>Lives: {lives}</h3>
-    
-              {showNumber ? (
-                <h1 style={{ fontSize: "3rem" }}>{number}</h1>
-              ) : (
-                <div>
-                  <input
-                    type="text"
-                    value={userInput}
-                    onChange={e => setUserInput(e.target.value)}
-                    placeholder="Enter the number"
-                  />
-                  <button onClick={handleSubmit}>Submit</button>
+        <TestArea onClick={startGame} clickable={status === "idle"}>
+            {status === "idle" && (
+                <IntroScreen 
+                    title="Number Memory Test" 
+                    description="What is the longest number that you can remember?" />
+            )}
+
+            {status === "input" && (
+                <div className={styles.sndScreen}>
+                    {showNumber ? (
+                        <h1 className={styles.number}>
+                            {number}
+                        </h1>
+                    ) : (
+                        <>
+                            <h1 className={styles.question}>
+                                What was the number?
+                            </h1>
+                  
+                            <input
+                                className={styles.input}
+                                type="text"
+                                value={userInput}
+                                onChange={(e) => setUserInput(e.target.value)}
+                                onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+                                placeholder="Enter the number"/>
+                  
+                            <SubmitButton onClick={handleSubmit} />
+                        </>
+                    )}
+
+                    <Hearts heartsLeft={lives} />
                 </div>
-              )}
-            </>
-          )}
-        </div>
-      );
+            )}
+
+            {status === "over" && (
+                <ResultsScreen 
+                    description={`You remembered at most: ${level - 1} ${level - 1 == 1 ? "digit" : "digits"}`}
+                    handleRestart={restartTest} />
+            )}
+        </TestArea>
+    );
 };
 
 export default NumberMemoryTest;

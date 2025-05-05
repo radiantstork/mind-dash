@@ -1,36 +1,62 @@
-import React, { useState} from 'react';
-import styles from "./TimePerceptionTest.module.css"
+// bug: test area is clickable in the results screen
+
+import { useState } from 'react';
+
+import styles from "./TimePerceptionTest.module.css";
+import TestArea from "../../components/TestArea/TestArea.tsx";
+import IntroScreen from '../../components/IntroScreen/IntroScreen.tsx';
+import ResultsScreen from '../../components/ResultsScreen/ResultsScreen.tsx';
 
 const TimePerceptionTest: React.FC = () => {
+    const [status, setStatus] = useState<"idle" | "running" | "over">("idle");
     const [startTime, setStartTime] = useState<number | null>(null);
-    const [result, setResult] = useState<number | null>(null);
+    const [elapsedTime, setElapsedTime] = useState<number | null>(null);
 
-    const handleButtonClick = () => {
-        if (startTime === null) {
-            setResult(null);
+    const handleClick = () => {
+        if (status === "idle") {
+            setStatus("running");
             setStartTime(Date.now());
-        } else {
-            const elapsedTime = (Date.now() - startTime) / 1000;
-            setResult(elapsedTime);
-            setStartTime(null);
-        };
+        } else if (status === "running" && startTime) {
+            const result = (Date.now() - startTime) / 1000;
+            setElapsedTime(result);
+            setStatus("over");
+        }       
+    };
+
+    const restartTest = () => {
+        setStatus("idle");
+        setStartTime(null);
+        setElapsedTime(null);
     };
 
     return (
-        <div className={styles.container}>
-            <h1 className={styles.title}>Time Perception Test</h1>
-
-            <button className={styles.button} onClick={handleButtonClick}>
-                {startTime === null ? "Start" : "Click after 5 seconds"}
-            </button>
-
-            {result !== null && (
-                <div className={styles.results}>
-                    <p>You waited: {result.toFixed(2)} seconds</p>
-                    <p>Difference from 5 seconds: {(Math.abs(result - 5)).toFixed(2)} seconds</p>
-                </div>
+        <TestArea onClick={handleClick} clickable={status === "idle" || status === "running"}>
+            {status === "idle" && (
+                <IntroScreen 
+                    title="Time Perception Test" 
+                    description="How accurately can you estimate time without a watch?" />
             )}
-        </div>
+
+            {status === "running" && (
+                <>
+                    <h1 className={styles.time}>
+                        5 seconds
+                    </h1>
+
+                    <div className={styles.text}>
+                        <p>
+                            Click when the time is up
+                        </p>
+                    </div>
+                </>
+            )}
+
+            {status === "over" && elapsedTime !== null && (
+                <ResultsScreen 
+                    description={`You estimated: ${elapsedTime.toFixed(2)} seconds (off by ${Math.abs(elapsedTime - 5).toFixed(2)})`} 
+                    handleRestart={restartTest} />
+            )}
+        </TestArea>
     );
 };
 

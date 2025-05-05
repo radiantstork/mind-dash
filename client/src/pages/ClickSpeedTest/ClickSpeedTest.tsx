@@ -1,110 +1,72 @@
-import { useEffect, useState } from "react";
-import styles from "./ClickSpeedTest.module.css";
+import { useState } from "react";
+
+import styles from "./ClickSpeedTestDefault.module.css";
+
+import TestArea from "../../components/TestArea/TestArea.tsx";
+import IntroScreen from "../../components/IntroScreen/IntroScreen.tsx";
+import ResultsScreen from "../../components/ResultsScreen/ResultsScreen.tsx";
 
 const ClickSpeedTest: React.FC = () => {
     const [clicks, setClicks] = useState(0);
-    const [timeLeft, setTimeLeft] = useState(10);
-    const [isRunning, setIsRunning] = useState(false);
-    const [hasFinished, setHasFinished] = useState(false);
+    const [startTime, setStartTime] = useState<number | null>(null);
+    const [elapsedTime, setElapsedTime] = useState<number | null>(null);
 
-    useEffect(() => {
-        let interval: ReturnType<typeof setInterval>;
-        if (isRunning && timeLeft > 0) {
-            interval = setInterval(() => {
-                setTimeLeft(prev => {
-                    if (prev <= 1) {
-                        clearInterval(interval);
-                        setIsRunning(false);
-                        setHasFinished(true);
-                        return 0;
-                    }
-                    return prev - 1;
-                });
-            }, 1000);
-        }
-        return () => clearInterval(interval);
-    }, [isRunning, timeLeft]);
+    const [status, setStatus] = useState<"idle" | "running" | "over">("idle");
 
     const handleClick = () => {
-        if (!isRunning && !hasFinished) {
-            setIsRunning(true);
-            setTimeLeft(10);
+        if (status === "idle") {
+            const now = Date.now();
+            setStatus("running");
+            setStartTime(now);
             setClicks(1);
-        } else if (isRunning) {
-            setClicks(prev => prev + 1);
+        } else if (status === "running") {
+            setClicks(prev => {
+                const newCount = prev + 1;
+                if (newCount >= 50 && startTime !== null) {
+                    const duration = (Date.now() - startTime) / 1000;
+                    setElapsedTime(duration);
+                    setStatus("over");
+                }
+                return newCount;
+            });
         }
     };
 
     const restartTest = () => {
         setClicks(0);
-        setTimeLeft(10);
-        setIsRunning(false);
-        setHasFinished(false);
+        setStatus("idle");
+        setStartTime(null);
+        setElapsedTime(null);
     };
 
-    const clicksPerSec = parseFloat((clicks / 10).toFixed(2));
+    const clicksPerSec = elapsedTime ? (clicks / elapsedTime).toFixed(2) : "0.00";
 
     return (
-        <div className={styles.pageWrapper}>
-            <section className={styles.testBanner} onClick={handleClick}>
-                {isRunning && !hasFinished && (
-                    <>
-                        <p className={styles.clickText}>
-                            Click me!
-                        </p>
+        <TestArea onClick={handleClick} clickable={status === "idle" || status === "running"}>
+            {status === "idle" && (
+                <IntroScreen 
+                    title="Click Speed Test" 
+                    description="How fast can you click 50 times?" />
+            )}
 
-                        <p className={styles.counter}>
-                            Clicks: {clicks}
-                        </p>
+            {status === "running" && (
+                <>
+                    <p className={styles.clickText}>
+                        Click me!
+                    </p>
 
+                    <p className={styles.counter}>
+                        Clicks: {clicks}
+                    </p>
+                </>
+            )}
 
-                    </>
-                )}
-
-                {!isRunning && !hasFinished && (
-                    <>
-                        <h1 className={styles.title}>Click Speed Test</h1>
-                        <div className={styles.description}>
-                            <p>Click as fast as you can for ten seconds.</p>
-                            <p>To begin, click anywhere.</p>
-                        </div>
-                    </>
-                )}
-
-                {hasFinished && (
-                    <>
-                        <p className={styles.result}>Clicks per second: {clicksPerSec}</p>
-
-                        <button onClick={restartTest} className={styles.restartButton}>
-                            Restart Test
-                        </button>
-                    </>
-                )}
-            </section>
-
-            {/* SIDE BY SIDE SECTIONS */}
-            <section className={styles.flexSection}>
-                {/* Left: How to play */}
-                <div className={styles.sideBox}>
-                    <h2>Cum se joacă?</h2>
-                    <p>Apasă pe butonul „Click Me” și încearcă să dai cât mai multe click-uri în 10 secunde.</p>
-                    <ul>
-                        <li>🖱️ Click pe buton pentru a începe</li>
-                        <li>⏱️ Cronometrul începe automat</li>
-                        <li>🔥 Click cât mai repede posibil</li>
-                        <li>📊 Rezultatul va apărea la final</li>
-                    </ul>
-                </div>
-
-                {/* Right: Stats placeholder */}
-                <div className={styles.sideBox}>
-                    <h2>Statistici & Progres</h2>
-                    <div className={styles.chartPlaceholder}>
-                        📈 Aici vor fi afișate graficele tale viitoare.
-                    </div>
-                </div>
-            </section>
-        </div>
+            {status === "over" && (
+                <ResultsScreen 
+                    description={`Clicks per second: ${clicksPerSec}`} 
+                    handleRestart={restartTest}/>
+            )}
+        </TestArea>
     );
 };
 

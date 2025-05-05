@@ -1,6 +1,13 @@
-import React, {useState, useEffect, useRef} from "react";
+import { useState, useEffect, useRef } from "react";
+
 import words from "./words.txt?raw";
 import substrings from "./substrings.txt?raw";
+
+import styles from "./LanguageDexterityTest.module.css";
+import TestArea from "../../components/TestArea/TestArea.tsx";
+import IntroScreen from "../../components/IntroScreen/IntroScreen.tsx";
+import ResultsScreen from "../../components/ResultsScreen/ResultsScreen.tsx";
+import Hearts from "../../components/Hearts/Hearts.tsx";
 
 const WORD_SET: Set<string> = new Set(
     words.split("\n").map(w => w.trim().toLowerCase())
@@ -10,13 +17,12 @@ const SUBSTRING_ARRAY: string[] = substrings
     .split("\n")
     .map(w => w.trim().toLowerCase());
 
-const getRandomSubstring = () => 
+const getRandomSubstring = () =>
     SUBSTRING_ARRAY[Math.floor(Math.random() * SUBSTRING_ARRAY.length)];
 
 type GameStatus = "idle" | "running" | "over";
 
-const WordGuessingTest: React.FC = () => {
-    const [gameStarted, setGameStarted] = useState(false);
+const LanguageDexterityTest: React.FC = () => {
     const [status, setStatus] = useState<GameStatus>("idle");
     const [substring, setSubstring] = useState("");
     const [score, setScore] = useState(0);
@@ -28,12 +34,20 @@ const WordGuessingTest: React.FC = () => {
 
     const inputRef = useRef<HTMLInputElement>(null);
 
-    // ----- Timer -----
+    useEffect(() => {
+        if (status === "running") {
+            setScore(0);
+            setLives(3);
+            setUsedWords(new Set());
+            startNewRound();
+        }
+    }, [status]);
+
     useEffect(() => {
         if (status !== "running") {
             return;
         }
-        
+
         if (timeLeft <= 0) {
             handleTimeout();
         }
@@ -44,24 +58,21 @@ const WordGuessingTest: React.FC = () => {
             clearInterval(timerId);
         }
 
-        // const duration = Math.floor(Math.random() * 6) + 5;
-        const duration = 5;
-        setTimeLeft(duration);
+        setTimeLeft(5);
 
         const id = window.setInterval(() => {
-            // setTimeLeft(timeLeft - 1); // greseala 
-            setTimeLeft((prevTimeLeft) => prevTimeLeft - 1);
+            setTimeLeft(prev => prev - 1);
         }, 1000);
 
         setTimerId(id);
-    }
+    };
 
     const clearTimer = () => {
         if (timerId) {
             clearInterval(timerId);
             setTimerId(null);
         }
-    }
+    };
 
     const handleTimeout = () => {
         clearTimer();
@@ -73,36 +84,24 @@ const WordGuessingTest: React.FC = () => {
         } else {
             startNewRound();
         }
-    }
-
-    // ----- Game logic -----
-    const startGame = () => {
-        setGameStarted(true);
-        setStatus("running");
-        setScore(0);
-        setLives(3);
-        setUsedWords(new Set());
-        startNewRound();
-    }
+    };
 
     const startNewRound = () => {
-        const randomSubstring = getRandomSubstring();
-        setSubstring(randomSubstring);
+        setSubstring(getRandomSubstring());
         setInput("");
         startTimer();
-        inputRef.current?.focus(); // ??
-    }
+        inputRef.current?.focus();
+    };
 
-    // ----- Input handling -----
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setInput(e.target.value);
-    }
+    };
 
     const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter") {
             checkAnswer();
         }
-    }
+    };
 
     const checkAnswer = () => {
         const playerWord = input.toLowerCase();
@@ -116,49 +115,54 @@ const WordGuessingTest: React.FC = () => {
         setUsedWords(new Set(usedWords).add(playerWord));
         clearTimer();
         startNewRound();
-    }
+    };
 
     const playWrongSound = () => {
-        // audio
         console.log("WRONG");
+    };
+
+    const restartTest = () => {
+        setStatus("idle");
     }
 
-    return(
-        <div>
-            <h1>Word Guessing Game</h1>
-
-            <p>Word Speed Test is a fast-paced language skills game designed to test your vocabulary, reflexes, and mental agility.</p> 
-            <p>Each round presents you with a random letter sequence (substring), and your goal is to type an actual English word that contains that sequence — before time runs out.</p>
-            <p>It’s ideal for sharpening linguistic instincts and reaction speed.</p>
-
-            {!gameStarted && (
-                <button onClick={startGame}>Start</button>
+    return (
+        <TestArea onClick={() => setStatus("running")} clickable={status === "idle"}>
+            {status === "idle" && (
+                <IntroScreen 
+                    title="Language Dexterity Test" 
+                    description="Can you continuously find English words containing the given letters?" />
             )}
 
             {status === "running" && (
-                <>
-                    <p>Substring: {substring}</p>
-                    <input 
-                        ref={inputRef} 
-                        type="text" 
-                        value={input} 
-                        onChange={handleInputChange} 
-                        onKeyDown={handleInputKeyDown} 
-                        autoFocus />
-                    <p>Lives: {lives}</p>
-                    <p>Score: {score}</p>
-                </>
+                <div className={styles.sndScreen}>
+                    <h2 className={styles.question}>
+                        {substring}
+                    </h2>
+
+                    <input
+                        ref={inputRef}
+                        className={styles.input}
+                        type="text"
+                        value={input}
+                        onChange={handleInputChange}
+                        onKeyDown={handleInputKeyDown}
+                        placeholder="Enter a word"/>
+
+                    <Hearts heartsLeft={lives} />
+
+                    <p className={styles.currentScore}>
+                        Score: {score}
+                    </p>
+                </div>
             )}
 
             {status === "over" && (
-                <>
-                    <p>Game Over!</p>
-                    <p>Your final score: {score}</p>
-                    <button onClick={startGame}>Play again</button>
-                </>
+                <ResultsScreen 
+                    description={`You lasted: ${score} ${score == 1 ? "word" : "words"}`} 
+                    handleRestart={restartTest}/>
             )}
-        </div>
+        </TestArea>
     );
-}
+};
 
-export default WordGuessingTest;
+export default LanguageDexterityTest;

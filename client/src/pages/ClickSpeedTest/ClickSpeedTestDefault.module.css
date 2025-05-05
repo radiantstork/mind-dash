@@ -1,8 +1,9 @@
-.time {
+.clickText {
     font-size: 4rem;
+    font-weight: bold;
 }
 
-.text {
+.counter {
     font-size: 2.5rem;
     margin-top: 0.5rem;
 }
