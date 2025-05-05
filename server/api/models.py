@@ -5,6 +5,7 @@ from django.db import models
 class User(AbstractUser):
     class Meta:
         app_label = 'api'
+        db_table = 'users'
     score = models.IntegerField(default=0)
 
     def __str__(self):

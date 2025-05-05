@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import '../VerbalMemory.css';
 import {VerbalMemoryGameState, VerbalMemoryTest, Word} from "../types/games.ts"; // Create this for custom styles
 import GameStats from './GameStats';
+import customFetch from "../services/custom_fetch.ts";
 
 const VerbalMemory: React.FC = () => {
     const [showStats, setShowStats] = useState(true);
@@ -26,7 +26,7 @@ const VerbalMemory: React.FC = () => {
   const fetchNewWord = async () => {
     try {
       setState((prev: any) => ({ ...prev, loading: true }));
-      const response = await axios.get('http://localhost:8000/api/verbal-memory/random-word/');
+      const response = await customFetch.get('/api/verbal-memory/random-word/');
       console.log(response)
       const word: Word = response.data['word'];
       setState((prev: any) => ({ ...prev, currentWord: word, loading: false }));
@@ -81,8 +81,9 @@ const VerbalMemory: React.FC = () => {
 
   const endGame = async () => {
     try {
-      const response = await axios.post(
-          'http://localhost:8000/api/verbal-memory/tests/', {
+      const response = await customFetch.post(
+          '/api/verbal-memory/tests/',
+          {
         score: state.score}
       );
 

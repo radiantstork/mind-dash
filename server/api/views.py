@@ -1,18 +1,19 @@
 from django.contrib.auth.models import AnonymousUser
 from django.db.models import Count, Case, When, Value
-from django.shortcuts import render
 from django.http import HttpResponse
-from rest_framework import generics, status
+from rest_framework import generics
 from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny
 from django.db.models import CharField
 
 from .models import VerbalMemoryTest, WordPool, ChimpTest
-from .serializers.verbal_memory import VerbalMemoryTestSerializer, WordPoolSerializer
+from .serializers.verbal_memory import VerbalMemoryTestSerializer
 from .serializers.chimp import ChimpTestSerializer
-import random
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from django.contrib.auth import authenticate, login, logout
+from .serializers.serializers import UserSerializer, UserRegistrationSerializer
 
 
 def index(request):
@@ -68,8 +69,9 @@ class ChimpTestView(generics.ListCreateAPIView):
 
 @api_view(['GET'])
 def user_score_history(request):
+    print(request.user)
     if not request.user.is_authenticated:
-        return Response([], status=200)  # Return empty array for anonymous users
+        return Response([], status=400)  # Return empty array for anonymous users
     tests = VerbalMemoryTest.objects.filter(user=request.user).order_by('created_at')
     data = [{
         'date': test.created_at.strftime('%Y-%m-%d'),
@@ -100,3 +102,46 @@ def score_distribution(request):
         'distribution': list(distribution) or [],
         'user_score': user_score.score if user_score else None
     })
+
+class LoginView(APIView):
+    def post(self, request):
+        print(request.data)
+        username = request.data.get('body').get('username')
+        password = request.data.get('body').get('password')
+
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            serializer = UserSerializer(user)
+            return Response({
+                'detail': 'Successfully logged in',
+                'user': serializer.data
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response(
+                {'detail': 'Invalid credentials'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+
+
+class RegisterView(APIView):
+    def post(self, request):
+        serializer = UserRegistrationSerializer(data=request.data["body"])
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {'detail': 'User created successfully'},
+                status=status.HTTP_201_CREATED
+            )
+        print(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LogoutView(APIView):
+    def post(self, request):
+        logout(request)
+        return Response(
+            {'detail': 'Successfully logged out'},
+            status=status.HTTP_200_OK
+        )
