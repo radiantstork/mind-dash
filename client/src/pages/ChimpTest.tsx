@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
 import '../ChimpTest.css';
 import {ChimpTestResult, Tile} from "../types/games.ts";
+import customFetch from "../services/custom_fetch.ts";
+import GameStats from "./GameStats.tsx";
 
 const ChimpTest: React.FC = () => {
   const [gameState, setGameState] = useState<'ready' | 'memorize' | 'recall' | 'finished'>('ready');
@@ -10,6 +11,7 @@ const ChimpTest: React.FC = () => {
   const [currentNumber, setCurrentNumber] = useState(1);
   const [highScores, setHighScores] = useState<ChimpTestResult[]>([]);
   const [hideNumbers, setHideNumbers] = useState(false);
+      const [showStats, setShowStats] = useState(true);
 
   // Generate random positions for tiles
   const generateTiles = useCallback((count = level) => {
@@ -79,7 +81,7 @@ const ChimpTest: React.FC = () => {
 
   const saveScore = async () => {
     try {
-      await axios.post('/api/chimp-test/', {
+      await customFetch.post('/api/chimp-test/', {
         score: level - 3, // Score starts from 1 (level 4 = score 1)
         sequence_length: level
       });
@@ -91,7 +93,7 @@ const ChimpTest: React.FC = () => {
 
   const fetchHighScores = async () => {
     try {
-      const response = await axios.get('/api/chimp-test/');
+      const response = await customFetch.get('/api/chimp-test/');
       setHighScores(response.data.results || []);
     } catch (error) {
       console.error('Error fetching scores:', error);
@@ -109,58 +111,68 @@ const ChimpTest: React.FC = () => {
   }, [gameState]);
 
   return (
-    <div className="chimp-test-container">
-      <h2>Chimp Test</h2>
-      <p>
-        {gameState === 'ready' && 'Remember the numbers and click them in order'}
-        {gameState === 'memorize' && `Memorize the numbers (Level ${level - 3})`}
-        {gameState === 'recall' && 'Click the tiles in order from 1 upwards'}
-        {gameState === 'finished' && `Game Over! Your score: ${level - 3}`}
-      </p>
-
-      {gameState === 'ready' && (
-        <button onClick={() => startGame()} className="start-button">
-          Start Test
-        </button>
-      )}
-
-      {(gameState === 'memorize' || gameState === 'recall') && (
-  <div className="game-area">
-    {tiles.map((tile, index) => (
-      <button
-        key={tile.number}
-        className={`tile ${gameState === 'memorize' ? 'visible' : 'hidden'}`}
-        style={{ top: tile.top, left: tile.left }}
-        onClick={() => handleTileClick(tile.number, index)}
-      >
-        {(gameState === 'memorize' || !hideNumbers) ? tile.number : ''}
-      </button>
-    ))}
-  </div>
-)}
-
-      {gameState === 'finished' && (
-        <div className="game-results">
-          <button onClick={() => {
-            setLevel(4);
-            setGameState('ready');
-          }} className="restart-button">
-            Try Again
-          </button>
-
-          <div className="high-scores">
-            <h3>High Scores</h3>
-            <ol>
-              {highScores.map((score, index) => (
-                <li key={index}>
-                  Score: {score.score} (Sequence: {score.sequence_length})
-                </li>
-              ))}
-            </ol>
-          </div>
+      <div className="chimp-test-container">
+        <div className="game-container">
+          {showStats && (
+              <>
+                <GameStats gameName="chimp-test"/>
+                <button onClick={() => setShowStats(false)} className="start-button">
+                  Hide Stats
+                </button>
+              </>
+          )}
         </div>
-      )}
-    </div>
+        <h2>Chimp Test</h2>
+        <p>
+          {gameState === 'ready' && 'Remember the numbers and click them in order'}
+          {gameState === 'memorize' && `Memorize the numbers (Level ${level - 3})`}
+          {gameState === 'recall' && 'Click the tiles in order from 1 upwards'}
+          {gameState === 'finished' && `Game Over! Your score: ${level - 3}`}
+        </p>
+
+        {gameState === 'ready' && (
+            <button onClick={() => startGame()} className="start-button">
+              Start Test
+            </button>
+        )}
+
+        {(gameState === 'memorize' || gameState === 'recall') && (
+            <div className="game-area">
+              {tiles.map((tile, index) => (
+                  <button
+                      key={tile.number}
+                      className={`tile ${gameState === 'memorize' ? 'visible' : 'hidden'}`}
+                      style={{top: tile.top, left: tile.left}}
+                      onClick={() => handleTileClick(tile.number, index)}
+                  >
+                    {(gameState === 'memorize' || !hideNumbers) ? tile.number : ''}
+                  </button>
+              ))}
+            </div>
+        )}
+
+        {gameState === 'finished' && (
+            <div className="game-results">
+              <button onClick={() => {
+                setLevel(4);
+                setGameState('ready');
+              }} className="restart-button">
+                Try Again
+              </button>
+
+              <div className="high-scores">
+                <h3>High Scores</h3>
+                <ol>
+                  {highScores.map((score, index) => (
+                      <li key={index}>
+                        Score: {score.score} (Sequence: {score.sequence_length})
+                      </li>
+                  ))}
+                </ol>
+              </div>
+            </div>
+        )}
+      </div>
   );
 };
 

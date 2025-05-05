@@ -1,5 +1,5 @@
 from django.contrib.auth.models import AnonymousUser
-from django.db.models import Count, Case, When, Value
+from django.db.models import Count, Case, When, Value, Max, Min
 from django.http import HttpResponse
 from rest_framework import generics
 from rest_framework.decorators import api_view
@@ -14,7 +14,6 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import authenticate, login, logout
 from .serializers.serializers import UserSerializer, UserRegistrationSerializer
-from .serializers import UserSerializer, UserRegistrationSerializer
 from rest_framework.permissions import IsAuthenticated
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import JsonResponse
@@ -39,7 +38,7 @@ class VerbalMemoryTestView(APIView):
             user = request.user if not isinstance(request.user, AnonymousUser) else None
             serializer.save(user=user)
             return Response(serializer.data, status=201)
-        return Response(serializer.errors, status=400)
+        return Response(serializer.errors, status=200)
 
 
 class RandomWordView(APIView):
@@ -73,10 +72,15 @@ class ChimpTestView(generics.ListCreateAPIView):
 
 @api_view(['GET'])
 def user_score_history(request):
-    print(request.user)
+    game_name = request.GET.get('game')
     if not request.user.is_authenticated:
-        return Response([], status=400)  # Return empty array for anonymous users
-    tests = VerbalMemoryTest.objects.filter(user=request.user).order_by('created_at')
+        return Response([], status=400)
+    if game_name == 'verbal-memory':
+        tests = VerbalMemoryTest.objects.filter(user=request.user).order_by('created_at')
+    elif game_name == 'chimp-test':
+        tests = ChimpTest.objects.filter(user=request.user).order_by('created_at')
+    else:
+        tests = []
     data = [{
         'date': test.created_at.strftime('%Y-%m-%d'),
         'score': test.score
@@ -86,25 +90,68 @@ def user_score_history(request):
 
 @api_view(['GET'])
 def score_distribution(request):
-    bins = [0, 5, 10, 15, 20, 25, 30, 35, 40]
-    distribution = VerbalMemoryTest.objects.all().annotate(
-        bin=Case(
-            *[When(score__gte=bin_min, score__lt=bin_max, then=Value(f'{bin_min}-{bin_max}'))
-              for bin_min, bin_max in zip(bins[:-1], bins[1:])],
-            default=Value(f'{bins[-1]}+'),
-            output_field=CharField()
-        )
-    ).values('bin').annotate(count=Count('id')).order_by('bin')
+    # Get the min and max high scores across all users
+    game_name = request.GET.get('game')
+    if game_name == 'verbal memory':
+        model = VerbalMemoryTest
+    elif game_name == 'chimp-test':
+        model = ChimpTest
+    else:
+        model = VerbalMemoryTest
+    stats = model.objects.values('user').annotate(
+        high_score=Max('score')
+    ).aggregate(
+        min_score=Min('high_score'),
+        max_score=Max('high_score')
+    )
 
-    user_score = None
+    min_score = stats['min_score'] or 0
+    max_score = stats['max_score'] or 5  # Avoid division by zero
+
+    # Calculate dynamic bins (max 10 bins)
+    num_bins = min(10, max_score - min_score + 1)
+    bin_size = max(1, (max_score - min_score) // num_bins)
+
+    # Generate bin edges (integer values)
+    bins = [min_score + i * bin_size for i in range(num_bins)]
+    bins.append(max_score + 1)  # Add upper bound for the last bin
+
+    # Get each user's high score
+    high_scores = model.objects.values('user').annotate(
+        high_score=Max('score')
+    ).values_list('high_score', flat=True)
+
+    # Create distribution dictionary
+    distribution = {}
+    for score in high_scores:
+        for i in range(len(bins) - 1):
+            if bins[i] <= score < bins[i + 1]:
+                bin_label = f'{bins[i]}-{bins[i + 1]}'
+                distribution[bin_label] = distribution.get(bin_label, 0) + 1
+                break
+
+    # Convert to ordered list of bins
+    distribution_list = [
+        {'bin': f'{bins[i]}-{bins[i + 1] }', 'count': distribution.get(f'{bins[i]}-{bins[i + 1]}', 0)}
+        for i in range(len(bins) - 1)
+    ]
+
+    # Get current user's high score (if authenticated)
+    user_high_score = None
     if request.user.is_authenticated:
-        user_score = VerbalMemoryTest.objects.filter(
+        user_high_score = model.objects.filter(
             user=request.user
-        ).order_by('-score').first()
+        ).aggregate(high_score=Max('score'))['high_score']
 
     return Response({
-        'distribution': list(distribution) or [],
-        'user_score': user_score.score if user_score else None
+        'distribution': distribution_list,
+        'user_high_score': user_high_score,
+        'bin_info': {
+            'min': min_score,
+            'max': max_score,
+            'num_bins': num_bins,
+            'bin_size': bin_size
+        }
     })
 
 @ensure_csrf_cookie

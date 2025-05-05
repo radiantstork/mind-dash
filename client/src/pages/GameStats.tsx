@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import { Line, Bar } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
+import customFetch from "../services/custom_fetch.ts";
 Chart.register(...registerables);
 
 interface ScoreData {
@@ -33,9 +33,9 @@ const GameStats = ({ gameName }: { gameName: string }) => {
         setError(null);
 
         const [historyRes, distRes] = await Promise.all([
-          axios.get<ScoreData[]>(`http://localhost:8000/api/${gameName}/user-score-history/`),
-          axios.get<{ distribution: DistributionData[]; user_score?: number }>(
-            `http://localhost:8000/api/${gameName}/score-distribution/`
+          customFetch.get<ScoreData[]>(`/api/user-score-history/?game=${gameName}`),
+          customFetch.get<{ distribution: DistributionData[]; user_score?: number }>(
+            `/api/score-distribution/?game=${gameName}`
           )
         ]);
 
