@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import styles from "./NumberMemoryTestDefault.module.css";
+import styles from "./NumberMemoryTest.module.css";
 import TestArea from "../../components/TestArea/TestArea.tsx";
 import IntroScreen from "../../components/IntroScreen/IntroScreen.tsx";
 import ResultsScreen from "../../components/ResultsScreen/ResultsScreen.tsx";
@@ -8,7 +8,7 @@ import Hearts from "../../components/Hearts/Hearts.tsx";
 import SubmitButton from "../../components/SubmitButton/SubmitButton.tsx";
 
 const NumberMemoryTest: React.FC = () => {
-    const [level, setLevel] = useState(3);
+    const [score, setScore] = useState(3);
     const [lives, setLives] = useState(3);
     const [number, setNumber] = useState("");
     const [userInput, setUserInput] = useState("");
@@ -24,7 +24,7 @@ const NumberMemoryTest: React.FC = () => {
     };
 
     const startGame = () => {
-        setLevel(1);
+        setScore(1);
         setLives(3);
         setStatus("input");
         const newNum = generateRandNum(1);
@@ -50,13 +50,13 @@ const NumberMemoryTest: React.FC = () => {
 
     const handleSubmit = () => {
         if (userInput === number) {
-            const next = level + 1;
-            setLevel(next);
+            const next = score + 1;
+            setScore(next);
             nextLevel(next);
         } else {
             if (lives > 1) {
                 setLives(prev => prev - 1);
-                nextLevel(level);
+                nextLevel(score);
             } else {
                 setStatus("over");
             }
@@ -65,7 +65,7 @@ const NumberMemoryTest: React.FC = () => {
 
     const restartTest = () => {
         setStatus("idle");
-        setLevel(1);
+        setScore(1);
         setLives(3);
         setNumber("");
         setUserInput("");
@@ -110,7 +110,7 @@ const NumberMemoryTest: React.FC = () => {
 
             {status === "over" && (
                 <ResultsScreen 
-                    description={`You remembered at most: ${level - 1} ${level - 1 == 1 ? "digit" : "digits"}`}
+                    description={`You remembered at most: ${score - 1} ${score - 1 == 1 ? "digit" : "digits"}`}
                     handleRestart={restartTest} />
             )}
         </TestArea>

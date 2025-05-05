@@ -39,7 +39,8 @@ const ClickSpeedTest: React.FC = () => {
         setElapsedTime(null);
     };
 
-    const clicksPerSec = elapsedTime ? (clicks / elapsedTime).toFixed(2) : "0.00";
+    // score = clicks per second
+    const score = elapsedTime ? (clicks / elapsedTime).toFixed(2) : "0.00";
 
     return (
         <TestArea onClick={handleClick} clickable={status === "idle" || status === "running"}>
@@ -63,7 +64,7 @@ const ClickSpeedTest: React.FC = () => {
 
             {status === "over" && (
                 <ResultsScreen 
-                    description={`Clicks per second: ${clicksPerSec}`} 
+                    description={`Clicks per second: ${score}`} 
                     handleRestart={restartTest}/>
             )}
         </TestArea>

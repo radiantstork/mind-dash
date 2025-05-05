@@ -52,7 +52,7 @@ const shuffle = <T,>(arr: T[]): T[] => {
 
 const ColorMemoryTest: React.FC = () => {
     const [status, setStatus] = useState<GameStatus>(GameStatus.Idle);
-    const [level, setLevel] = useState(1);
+    const [score, setScore] = useState(1);
     const [sequence, setSequence] = useState<Color[]>([]);
     const [userInput, setUserInput] = useState<Color[]>([]);
     const [hearts, setHearts] = useState(3);
@@ -62,7 +62,7 @@ const ColorMemoryTest: React.FC = () => {
 
     const timers = useRef<number[]>([]);
 
-    const availableColors = ALL_COLORS.slice(0, Math.min(level, ALL_COLORS.length));
+    const availableColors = ALL_COLORS.slice(0, Math.min(score, ALL_COLORS.length));
 
     useEffect(() => {
         if (status !== GameStatus.Showing) return;
@@ -95,10 +95,10 @@ const ColorMemoryTest: React.FC = () => {
             timers.current.forEach(clearTimeout);
             timers.current = [];
         };
-    }, [status, level]);
+    }, [status, score]);
 
     const startTest = () => {
-        setLevel(1);
+        setScore(1);
         setHearts(3);
         setUserInput([]);
         setClickedColors(new Set());
@@ -134,7 +134,7 @@ const ColorMemoryTest: React.FC = () => {
             }, 1000));
         } else if (updatedInput.length === sequence.length) {
             timers.current.push(window.setTimeout(() => {
-                setLevel(prev => Math.min(prev + 1, ALL_COLORS.length));
+                setScore(prev => Math.min(prev + 1, ALL_COLORS.length));
                 setUserInput([]);
                 setClickedColors(new Set());
                 setStatus(GameStatus.Showing);
@@ -190,7 +190,7 @@ const ColorMemoryTest: React.FC = () => {
 
             {status === GameStatus.Over && (
                 <ResultsScreen
-                    description={`You reached level ${level}`}
+                    description={`You remembered at most: ${score - 1} ${score - 1 == 1 ? "color" : "colors"}`}
                     handleRestart={restartTest}
                 />
             )}

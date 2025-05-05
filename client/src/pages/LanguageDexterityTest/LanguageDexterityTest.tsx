@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 
-import words from "./words.txt?raw";
-import substrings from "./substrings.txt?raw";
+import words from "../words.txt?raw";
+import substrings from "../substrings.txt?raw";
 
 import styles from "./LanguageDexterityTest.module.css";
 import TestArea from "../../components/TestArea/TestArea.tsx";

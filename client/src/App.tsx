@@ -1,7 +1,6 @@
 import './App.css';
 import { Routes, Route } from "react-router-dom";
 
-// import CosmicTheme from "./components/CosmicTheme/Layout/Layout.tsx";
 import DarkTheme from "./components/DarkTheme/DarkTheme.tsx";
 
 import Home from "./pages/Home";
@@ -12,6 +11,7 @@ import LanguageDexterityTest from "./pages/LanguageDexterityTest/LanguageDexteri
 import ClickSpeedTest from "./pages/ClickSpeedTest/ClickSpeedTest.tsx";
 import NumberMemoryTest from './pages/NumberMemoryTest/NumberMemoryTest.tsx';
 import ColorMemoryTest from './pages/ColorMemoryTest/ColorMemoryTest.tsx';
+import VerbalMemoryTest from './pages/VerbalMemoryTest/VerbalMemoryTest.tsx';
 
 function App() {
   return (
@@ -25,6 +25,7 @@ function App() {
         <Route path="/click-speed" element={<ClickSpeedTest />} />
         <Route path="/number-memory" element={<NumberMemoryTest />} />
         <Route path="/color-memory" element={<ColorMemoryTest />} />
+        <Route path="/verbal-memory" element={<VerbalMemoryTest />} />
       </Routes>
     </DarkTheme>
     </>

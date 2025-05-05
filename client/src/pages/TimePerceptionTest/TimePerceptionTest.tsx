@@ -10,7 +10,7 @@ import ResultsScreen from '../../components/ResultsScreen/ResultsScreen.tsx';
 const TimePerceptionTest: React.FC = () => {
     const [status, setStatus] = useState<"idle" | "running" | "over">("idle");
     const [startTime, setStartTime] = useState<number | null>(null);
-    const [elapsedTime, setElapsedTime] = useState<number | null>(null);
+    const [score, setScore] = useState<number | null>(null);
 
     const handleClick = () => {
         if (status === "idle") {
@@ -18,7 +18,7 @@ const TimePerceptionTest: React.FC = () => {
             setStartTime(Date.now());
         } else if (status === "running" && startTime) {
             const result = (Date.now() - startTime) / 1000;
-            setElapsedTime(result);
+            setScore(result);
             setStatus("over");
         }       
     };
@@ -26,7 +26,7 @@ const TimePerceptionTest: React.FC = () => {
     const restartTest = () => {
         setStatus("idle");
         setStartTime(null);
-        setElapsedTime(null);
+        setScore(null);
     };
 
     return (
@@ -51,9 +51,9 @@ const TimePerceptionTest: React.FC = () => {
                 </>
             )}
 
-            {status === "over" && elapsedTime !== null && (
+            {status === "over" && score !== null && (
                 <ResultsScreen 
-                    description={`You estimated: ${elapsedTime.toFixed(2)} seconds (off by ${Math.abs(elapsedTime - 5).toFixed(2)})`} 
+                    description={`You estimated: ${score.toFixed(2)} seconds (off by ${Math.abs(score - 5).toFixed(2)})`} 
                     handleRestart={restartTest} />
             )}
         </TestArea>
