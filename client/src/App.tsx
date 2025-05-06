@@ -4,6 +4,7 @@ import Home from "./pages/Home.js";
 import Login from "./pages/LoginPage.tsx";
 import RegisterPage from './pages/RegisterPage.tsx';
 import { ToastContainer } from 'react-toastify';
+import VisualMemory from './games/visual_memory/VisualMemory.tsx';
 
 function App() {
   return (<div>
@@ -23,6 +24,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/visual-memory" element={<VisualMemory />} />
       </Routes>
     </div>
   );

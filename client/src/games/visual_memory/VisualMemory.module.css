@@ -1,0 +1,75 @@
+.gameContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.blockInput {
+  display: block;
+  margin: 1em auto;
+  width: fit-content;
+  background-color: white;
+  border: 1px solid black;
+  color: black;
+}
+
+.gameInfo {
+  display: flex;
+  gap: 2rem;
+  font-size: 1.2rem;
+}
+
+.grid {
+  display: grid;
+  gap: 10px;
+  width: 100%;
+}
+
+.tile {
+  aspect-ratio: 1;
+  background-color: #e0e0e0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.tile:hover {
+  opacity: 0.8;
+}
+
+.tileHighlighted {
+  aspect-ratio: 1;
+  background-color: #2196f3;
+  border-radius: 8px;
+}
+
+.tileWrong {
+  aspect-ratio: 1;
+  background-color: #9b9b9b;
+  border-radius: 8px;
+}
+
+.modeSelector {
+  display: flex;
+  gap: 1rem;
+}
+
+.modeSelector button {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+  color: black;
+}
+
+.modeSelector button:hover {
+  background-color: #e0e0e0;
+}
+
+.activeButton {
+  background-color: #2196f3 !important;
+  color: white !important;
+}

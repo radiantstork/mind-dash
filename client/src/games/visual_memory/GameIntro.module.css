@@ -1,0 +1,56 @@
+.container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+}
+
+.card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    max-width: 500px;
+    text-align: center;
+}
+
+.title {
+    color: #2196f3;
+    margin-bottom: 1.5rem;
+}
+
+.instructions {
+    margin-bottom: 2rem;
+}
+
+.tipsList {
+    text-align: left;
+    padding-left: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.tipsList li {
+    margin-bottom: 0.8rem;
+    color: #444;
+}
+
+.startButton {
+    background-color: #2196f3;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+.startButton:hover {
+    background-color: #1976d2;
+    transform: scale(1.05);
+}
