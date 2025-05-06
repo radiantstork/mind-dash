@@ -1,0 +1,32 @@
+.footer {
+    padding: 2rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background-color: #0e0e13;
+    color: #aaa;
+    border-top: 1px solid white;
+    box-shadow: 0 -4px 12px rgba(255, 255, 255, 0.331);   
+}
+  
+.footerLinks ul {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+    margin-top: 0.5rem;
+}
+  
+.footerLinks a {
+    color: #aaa;
+    text-decoration: none;
+}
+  
+.footerLinks a:hover {
+    color: #fff;
+}
+  
+.socials a {
+    margin-right: 1rem;
+    text-decoration: none;
+    font-size: 1.2rem;
+}

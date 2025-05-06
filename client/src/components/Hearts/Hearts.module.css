@@ -1,0 +1,12 @@
+.hearts {
+    margin-top: 0.5rem;
+    display: flex;
+    gap: 0.5rem;
+    font-size: 2.5rem;
+  }
+  
+  .heart.lost {
+    opacity: 0.5;
+    filter: grayscale(100%);
+  }
+  

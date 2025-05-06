@@ -1,33 +1,35 @@
-import './App.css'
+import './App.css';
 import { Routes, Route } from "react-router-dom";
-import Home from "./pages/Home.js";
-import Login from "./pages/LoginPage.tsx";
-import RegisterPage from './pages/RegisterPage.tsx';
-import { ToastContainer } from 'react-toastify';
-import VisualMemory from './games/visual_memory/VisualMemory.tsx';
+
+import DarkTheme from "./components/DarkTheme/DarkTheme.tsx";
+
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+
+import TimePerceptionTest from "./pages/TimePerceptionTest/TimePerceptionTest.tsx";
+import LanguageDexterityTest from "./pages/LanguageDexterityTest/LanguageDexterityTest.tsx";
+import ClickSpeedTest from "./pages/ClickSpeedTest/ClickSpeedTest.tsx";
+import NumberMemoryTest from './pages/NumberMemoryTest/NumberMemoryTest.tsx';
+import ColorMemoryTest from './pages/ColorMemoryTest/ColorMemoryTest.tsx';
+import VerbalMemoryTest from './pages/VerbalMemoryTest/VerbalMemoryTest.tsx';
 
 function App() {
-  return (<div>
-      <ToastContainer
-          position="bottom-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="light"
-        />
+  return (
+    <>
+    <DarkTheme>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/visual-memory" element={<VisualMemory />} />
+        <Route path="/time-perception" element={<TimePerceptionTest />} />
+        <Route path="/language-dexterity" element={<LanguageDexterityTest />} />
+        <Route path="/click-speed" element={<ClickSpeedTest />} />
+        <Route path="/number-memory" element={<NumberMemoryTest />} />
+        <Route path="/color-memory" element={<ColorMemoryTest />} />
+        <Route path="/verbal-memory" element={<VerbalMemoryTest />} />
       </Routes>
-    </div>
+    </DarkTheme>
+    </>
   );
 }
 
-export default App
+export default App;

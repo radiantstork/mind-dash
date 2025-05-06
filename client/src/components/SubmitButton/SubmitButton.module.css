@@ -1,0 +1,18 @@
+.submitButton {
+    margin-top: 1rem;
+    padding: 14px 36px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #1a1a1a;
+    background-color: #ffdd57;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+  
+.submitButton:hover:enabled {
+    background-color: #f4c400;
+    transform: translateY(-2px);
+}

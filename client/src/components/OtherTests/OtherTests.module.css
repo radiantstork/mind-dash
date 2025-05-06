@@ -1,0 +1,68 @@
+.otherTests {
+    padding: 3rem 2rem;
+    text-align: center;
+    border-bottom: red;
+}
+  
+.otherTests h2 {
+    color: rgb(230, 223, 223);
+    font-size: 3rem;
+    margin-bottom: 2.5rem;
+}
+  
+.testGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 4rem;
+  
+    justify-content: center;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.testCardLeft {
+    background: linear-gradient(135deg, #2a2a2a, #121212);
+}
+  
+.testCardRight {
+    background: linear-gradient(-135deg, #2a2a2a, #121212);
+}
+  
+.testCard {
+    box-shadow: 
+        inset 0 0 20px rgba(255, 255, 255, 0.05),
+        0 0 20px rgba(255, 255, 255, 0.1);
+
+    border: 2px solid white;
+    border-radius: 1.5rem;
+    color: #dbd7d7;
+
+    text-decoration: none;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border 0.25s ease;
+
+    position: relative;
+    overflow: hidden;
+    padding: 2rem;
+    max-width: 480px;
+}
+  
+.testCard:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(255, 255, 255, 0.13);
+}
+  
+.testCard .icon {
+    font-size: 3.5rem;
+    margin-bottom: 1.5rem;
+}
+  
+.testCard .info h3 {
+    font-size: 1.6rem;
+}
+  
+.testCard .info p {
+    margin-top: 0.8rem;
+    font-size: 1.05rem;
+    color: #ede8e8;
+}
+  

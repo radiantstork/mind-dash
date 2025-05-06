@@ -1,0 +1,31 @@
+.restartButton {
+    background: linear-gradient(to bottom right, #ffffff, #eaeaea);
+    color: #1a1a1a;
+
+    padding: 14px 32px;
+    margin-top: 1.5rem;
+
+    font-size: 1.2rem;
+    font-weight: 500;
+    font-family: 'Segoe UI', sans-serif;
+
+    border: 1px solid #d1d1d1; /* subtle border */
+    border-radius: 12px;
+
+    box-shadow:
+        inset 0 2px 4px rgba(255, 255, 255, 0.6), /* light top inner */
+        inset 0 -2px 4px rgba(0, 0, 0, 0.08),     /* darker bottom inner */
+        0 6px 15px rgba(0, 0, 0, 0.2);            /* outer drop shadow */
+
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.restartButton:hover {
+    box-shadow:
+        inset 0 2px 4px rgba(255, 255, 255, 0.6),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.1),
+        0 10px 20px rgba(0, 0, 0, 0.25);
+    background: linear-gradient(to bottom right, #f8f8f8, #e0e0e0);
+    transform: translateY(-2px);
+}

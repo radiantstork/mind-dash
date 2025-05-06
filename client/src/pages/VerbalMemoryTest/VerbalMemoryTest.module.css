@@ -1,0 +1,50 @@
+.container {
+    flex-direction: column;
+    display: flex;
+    align-items: center;
+}
+
+.word {
+    font-size: 4rem;
+    margin-top: 1rem;
+}
+
+.answersContainer {
+    display: flex;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.yes, .no {
+    display: flex;
+    justify-content: center;
+    cursor: pointer;
+
+    width: 6rem;
+    padding: 14px 36px;
+    font-size: 1.5rem;
+    border-radius: 12px;
+    border: 2px solid white;
+
+    color: #f0f0f0;
+    background: linear-gradient(to right, #6b1e9c, #9d3acb);
+    box-shadow: 0 0 10px rgba(155, 69, 235, 0.311);
+    transition: transform 0.1s ease, box-shadow 0.3s ease;
+  }
+  
+.yes:hover, .no:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 16px rgba(155, 69, 235, 0.461);
+}
+
+.yes {
+    margin-right: 1rem;
+}
+
+.no {
+    margin-left: 1rem;
+}
+
+.score {
+    font-size: 3rem;
+}
