@@ -33,22 +33,25 @@
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.2s;
+  border: none;
 }
 
 .tile:hover {
-  opacity: 0.8;
+  opacity: 0.9;
 }
 
 .tileHighlighted {
   aspect-ratio: 1;
   background-color: #2196f3;
   border-radius: 8px;
+  border: none;
 }
 
 .tileWrong {
   aspect-ratio: 1;
   background-color: #9b9b9b;
   border-radius: 8px;
+  border: none;
 }
 
 .modeSelector {

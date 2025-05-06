@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import styles from './VisualMemory.module.css';
-import GameIntro from './GameIntro';
+import TestArea from '../../components/TestArea/TestArea';
+import IntroScreen from '../../components/IntroScreen/IntroScreen';
+import OtherTests from '../../components/OtherTests/OtherTests';
+import ResultsScreen from '../../components/ResultsScreen/ResultsScreen';
 
 type TileState = {
   isPattern: boolean;
@@ -16,6 +19,7 @@ type GameState = {
   pattern: number[];
   misclicks: number;
   lives: number;
+  bossMusicLevel: number;
 
   start: boolean;
   patternDisplay: boolean;
@@ -32,6 +36,7 @@ const initialGameState: GameState = {
   misclicks: 3,
   lives: 3,
   gridSize: 3,
+  bossMusicLevel: 7,
 
   start: true,
   patternDisplay: false,
@@ -39,10 +44,6 @@ const initialGameState: GameState = {
   finished: false,
   gameOver: false,
 }
-
-/*
-
-*/
 
 
 const VisualMemory = () => {
@@ -109,8 +110,6 @@ const VisualMemory = () => {
   // -----------------Game start zone----------------
 
   function handleGameStart() {
-    console.log("Start state");
-
     setGameState(prev => {
       return {
         ...prev,
@@ -120,10 +119,12 @@ const VisualMemory = () => {
     });
   }
 
+  function handleGameReset() {
+    setGameState(initialGameState);
+  }
+
   // ------------Pattern display zone--------------
   useEffect(() => {
-    console.log("Pattern display: " + gameState.patternDisplay);
-
     if (!gameState.patternDisplay) {
       return;
     }
@@ -157,6 +158,8 @@ const VisualMemory = () => {
   const handleTileClick = (index: number) => {
     if (!gameState.playable) return;
 
+    if (gameState.tiles[index].isClicked) return;
+
     const newTiles = [...gameState.tiles];
 
     if (!gameState.tiles[index].isPattern) {
@@ -169,7 +172,6 @@ const VisualMemory = () => {
 
 
   useEffect(() => {
-    console.log("Misclick: " + gameState.misclicks);
     if (gameState.misclicks === 0) {
       setGameState(prev => {
         return {
@@ -183,7 +185,6 @@ const VisualMemory = () => {
 
 
   useEffect(() => {
-    console.log("Tile click: " + gameState.playable);
     if (!gameState.playable) {
       return;
     }
@@ -278,9 +279,14 @@ const VisualMemory = () => {
     return styles.tile;
   };
 
-  return (
-    <>
-      {gameState.start && <GameIntro onGameStart={handleGameStart} />}
+  return (<>
+    <TestArea onClick={handleGameStart} clickable={gameState.start}>
+      {gameState.start && (
+        <IntroScreen
+          title="Visual Memory Test"
+          description={`Can you remember more than 10 tiles at once? - ${gameState.mode} mode`}
+        />
+      )}
       {!gameState.start && !gameState.gameOver && <div className={styles.gameContainer}>
         <div className={styles.gameInfo}>
           <div>Level: {gameState.level}</div>
@@ -332,8 +338,15 @@ const VisualMemory = () => {
           </button>
         </div>
       </div>}
-    </>
-  );
+      {gameState.gameOver && (
+        <ResultsScreen
+          description={`You can memorize up to ${gameState.level - 1} tiles at once. 
+            ${gameState.level >= gameState.bossMusicLevel ? "Not bad" : ""}`}
+          handleRestart={handleGameReset} />
+      )}
+    </TestArea>
+    <OtherTests currentId="visual-memory" />
+  </>);
 };
 
 export default VisualMemory;
