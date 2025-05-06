@@ -6,6 +6,7 @@ import IntroScreen from "../../components/IntroScreen/IntroScreen.tsx";
 import ResultsScreen from "../../components/ResultsScreen/ResultsScreen.tsx";
 import Hearts from "../../components/Hearts/Hearts.tsx";
 import SubmitButton from "../../components/SubmitButton/SubmitButton.tsx";
+import OtherTests from "../../components/OtherTests/OtherTests.tsx";
 
 const NumberMemoryTest: React.FC = () => {
     const [score, setScore] = useState(3);
@@ -73,6 +74,7 @@ const NumberMemoryTest: React.FC = () => {
     }
 
     return (
+        <>
         <TestArea onClick={startGame} clickable={status === "idle"}>
             {status === "idle" && (
                 <IntroScreen 
@@ -114,6 +116,9 @@ const NumberMemoryTest: React.FC = () => {
                     handleRestart={restartTest} />
             )}
         </TestArea>
+
+        <OtherTests currentId="number-memory" />
+        </>
     );
 };
 

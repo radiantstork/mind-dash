@@ -5,22 +5,12 @@ import TestArea from "../../components/TestArea/TestArea.tsx";
 import IntroScreen from "../../components/IntroScreen/IntroScreen.tsx";
 import ResultsScreen from "../../components/ResultsScreen/ResultsScreen.tsx";
 import Hearts from "../../components/Hearts/Hearts.tsx";
+import OtherTests from "../../components/OtherTests/OtherTests.tsx";
 
-enum GameStatus {
-    Idle = "idle",
-    Showing = "showing",
-    Input = "input",
-    Over = "over",
-}
-
-type Color =
-    | "red" | "blue" | "green" | "yellow" | "orange" | "purple"
-    | "pink" | "black" | "gray" | "indigo" | "lime" | "brown"
-    | "peach" | "mustard" | "beige";
+type Color = "red" | "blue" | "green" | "yellow" | "orange" | "purple" | "pink";
 
 const ALL_COLORS: Color[] = [
-    "red", "blue", "green", "yellow", "orange", "purple", "pink", "black",
-    "gray", "indigo", "lime", "brown", "peach", "mustard", "beige"
+    "red", "blue", "green", "yellow", "orange", "purple", "pink"
 ];
 
 const COLORS: Record<Color, string> = {
@@ -30,19 +20,11 @@ const COLORS: Record<Color, string> = {
     yellow: "#ecf714",
     orange: "#fc8700",
     purple: "#900cad",
-    pink: "#ed07c3",
-    black: "#171617",
-    gray: "#706d70",
-    indigo: "#6a5acd",
-    lime: "#aaff00",
-    brown: "#703418",
-    peach: "#ffe5b4",
-    mustard: "#ffdb58",
-    beige: "#f5f5dc",
+    pink: "#ed07c3"
 };
 
 const shuffle = <T,>(arr: T[]): T[] => {
-    const a = [...arr];
+    const a: T[] = [...arr];
     for (let i = a.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [a[i], a[j]] = [a[j], a[i]];
@@ -51,46 +33,80 @@ const shuffle = <T,>(arr: T[]): T[] => {
 };
 
 const ColorMemoryTest: React.FC = () => {
-    const [status, setStatus] = useState<GameStatus>(GameStatus.Idle);
-    const [score, setScore] = useState(1);
+    const [status, setStatus] = useState<"idle" | "showing" | "input" | "over">("idle");
+    const [score, setScore] = useState<number>(1);
     const [sequence, setSequence] = useState<Color[]>([]);
     const [userInput, setUserInput] = useState<Color[]>([]);
-    const [hearts, setHearts] = useState(3);
-    const [currentColorIndex, setCurrentColorIndex] = useState<number | null>(null);
+    const [hearts, setHearts] = useState<number>(3);
+    const [currentColor, setCurrentColor] = useState<string>("#f0f0f0");
     const [clickedColors, setClickedColors] = useState<Set<Color>>(new Set());
-    const [clickLocked, setClickLocked] = useState(false);
-
+    const [clickLocked, setClickLocked] = useState<boolean>(false);
     const timers = useRef<number[]>([]);
-
-    const availableColors = ALL_COLORS.slice(0, Math.min(score, ALL_COLORS.length));
+    const availableColors: Color[] = ALL_COLORS.slice(0, Math.min(score, ALL_COLORS.length));
 
     useEffect(() => {
-        if (status !== GameStatus.Showing) return;
-
-        const newSequence = shuffle(availableColors).slice(0, availableColors.length);
-        setSequence(newSequence);
+        if (status !== "showing") return;
+    
+        let rawSequence: Color[];
+        if (score < 8) {
+            rawSequence = shuffle(availableColors).slice(0, availableColors.length);
+        } else {
+            rawSequence = Array.from({ length: score }, () =>
+                availableColors[Math.floor(Math.random() * availableColors.length)]
+            );
+        }
+    
+        const colorCounts: Record<Color, number> = {
+            red: 0,
+            blue: 0,
+            green: 0,
+            yellow: 0,
+            orange: 0,
+            purple: 0,
+            pink: 0
+          };
+        rawSequence.forEach(color => {
+            colorCounts[color] += 1;
+        });
+    
+        const displaySequence: string[] = [];
+        for (let i = 0; i < rawSequence.length; i++) {
+            const current = rawSequence[i];
+            const previous =  i > 0 ? rawSequence[i - 1] : null;
+    
+            if (previous !== null && score >= 8 && i > 0 && current === previous) {
+                displaySequence.push("#f0f0f0");
+            }
+    
+            displaySequence.push(COLORS[current]);
+    
+            colorCounts[current]--;
+        }
+    
+        setSequence(rawSequence);
         setClickedColors(new Set());
-
+    
         let i = 0;
         const showNext = () => {
-            if (i >= newSequence.length) {
-                setCurrentColorIndex(null);
-                timers.current.push(window.setTimeout(() => setStatus(GameStatus.Input), 400));
+            if (i >= displaySequence.length) {
+                timers.current.push(window.setTimeout(() => {
+                    setCurrentColor("#f0f0f0");
+                    setStatus("input");
+                }, 400));
                 return;
             }
-
-            setCurrentColorIndex(i);
+    
+            const color = displaySequence[i];
+            setCurrentColor(color);
+    
             timers.current.push(window.setTimeout(() => {
-                setCurrentColorIndex(null);
-                timers.current.push(window.setTimeout(() => {
-                    i++;
-                    showNext();
-                }, 400));
+                i++;
+                showNext();
             }, 1000));
         };
-
+    
         showNext();
-
+    
         return () => {
             timers.current.forEach(clearTimeout);
             timers.current = [];
@@ -102,99 +118,103 @@ const ColorMemoryTest: React.FC = () => {
         setHearts(3);
         setUserInput([]);
         setClickedColors(new Set());
-        setStatus(GameStatus.Showing);
+        setStatus("showing");
     };
 
     const restartTest = () => {
-        setStatus(GameStatus.Idle);
+        setStatus("idle");
     };
 
     const handleColorClick = (color: Color) => {
-        if (status !== GameStatus.Input || clickedColors.has(color) || clickLocked) return;
-
-        setClickedColors(prev => new Set(prev).add(color));
+        if (status !== "input" || clickLocked) return;
+    
+        if (score < 8 && clickedColors.has(color)) return;
+    
+        if (score < 8) {
+            setClickedColors(prev => new Set(prev).add(color));
+        }
+    
         const updatedInput = [...userInput, color];
         setUserInput(updatedInput);
-
+    
         const correct = sequence[updatedInput.length - 1] === color;
         if (!correct) {
             const remaining = hearts - 1;
             setHearts(remaining);
             setClickLocked(true);
-
+    
             timers.current.push(window.setTimeout(() => {
                 if (remaining <= 0) {
-                    setStatus(GameStatus.Over);
+                    setStatus("over");
                 } else {
                     setUserInput([]);
                     setClickedColors(new Set());
                     setClickLocked(false);
-                    setStatus(GameStatus.Showing);
+                    setStatus("showing");
                 }
             }, 1000));
         } else if (updatedInput.length === sequence.length) {
             timers.current.push(window.setTimeout(() => {
-                setScore(prev => Math.min(prev + 1, ALL_COLORS.length));
+                setScore(prev => prev + 1);
                 setUserInput([]);
                 setClickedColors(new Set());
-                setStatus(GameStatus.Showing);
+                setStatus("showing");
             }, 500));
         }
-    };
+    }
 
     return (
-        <TestArea onClick={startTest} clickable={status === GameStatus.Idle}>
-            {status === GameStatus.Idle && (
-                <IntroScreen 
-                    title="Color Memory Test"
-                    description="What's the longest color sequence you can memorize?" />
-            )}
+        <>
+            <TestArea onClick={startTest} clickable={status === "idle"}>
+                {status === "idle" && (
+                    <IntroScreen
+                        title="Color Memory Test"
+                        description="What's the longest color sequence you can memorize?" />
+                )}
 
-            {status === GameStatus.Showing && (
-                <div className={styles.sndScreen}>
-                    <div
-                        className={styles.circle}
-                        style={{
-                            backgroundColor:
-                                currentColorIndex !== null ? COLORS[sequence[currentColorIndex]] : "#f0f0f0",
-                            transition: "background-color 0.4s ease-in-out",
-                        }}
-                    />
-                </div>
-            )}
-
-            {status === GameStatus.Input && (
-                <div className={styles.sndScreen}>
-                    <div className={styles.circle} style={{ backgroundColor: "#f0f0f0" }} />
-                    <div className={styles.colorButtons}>
-                        {availableColors.map(color => {
-                            const isClicked = clickedColors.has(color);
-                            return (
-                                <button
-                                    key={color}
-                                    id={`color-${color}`}
-                                    className={`${styles.colorButton} ${isClicked ? styles.clicked : ""}`}
-                                    style={{
-                                        backgroundColor: isClicked ? "#ffffff" : COLORS[color],
-                                        transition: "background-color 0.4s ease-in-out",
-                                    }}
-                                    onClick={() => handleColorClick(color)}
-                                    disabled={isClicked}
-                                />
-                            );
-                        })}
+                {status === "showing" && (
+                    <div className={styles.sndScreen}>
+                        <div
+                            className={styles.circle}
+                            style={{ backgroundColor: currentColor }}/>
                     </div>
-                    <Hearts heartsLeft={hearts} />
-                </div>
-            )}
+                )}
 
-            {status === GameStatus.Over && (
-                <ResultsScreen
-                    description={`You remembered at most: ${score - 1} ${score - 1 == 1 ? "color" : "colors"}`}
-                    handleRestart={restartTest}
-                />
-            )}
-        </TestArea>
+                {status === "input" && (
+                    <div className={styles.sndScreen}>
+                        <div className={styles.circle} style={{ backgroundColor: "#f0f0f0" }} />
+
+                        <div className={styles.colorButtons}>
+                            {availableColors.map(color => {
+                                const isClicked = clickedColors.has(color);
+
+                                return (
+                                    <button
+                                        key={color}
+                                        id={`color-${color}`}
+                                        className={`${styles.colorButton} ${isClicked ? styles.clicked : ""}`}
+                                        style={{
+                                            backgroundColor: isClicked ? "#ffffff" : COLORS[color],
+                                            transition: "background-color 0.4s ease-in-out",
+                                        }}
+                                        onClick={() => handleColorClick(color)}
+                                        disabled={isClicked}/>
+                                    );
+                                })}
+                            </div>
+                        <Hearts heartsLeft={hearts} />
+                    </div>
+                )}
+
+                {status === "over" && (
+                    <ResultsScreen
+                        description={`You remembered at most: ${score - 1} ${score - 1 === 1 ? "color" : "colors"}`}
+                        handleRestart={restartTest}/>
+                    )}
+            </TestArea>
+
+            <OtherTests currentId="color-memory" />
+        </>
     );
 };
 

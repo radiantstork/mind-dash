@@ -6,6 +6,7 @@ import IntroScreen from "../../components/IntroScreen/IntroScreen.tsx";
 import ResultsScreen from "../../components/ResultsScreen/ResultsScreen.tsx";
 import TestArea from "../../components/TestArea/TestArea.tsx";
 import Hearts from "../../components/Hearts/Hearts.tsx";
+import OtherTests from "../../components/OtherTests/OtherTests.tsx";
 
 import words from "../words.txt?raw";
 
@@ -111,6 +112,7 @@ const VerbalMemoryTest: React.FC = () => {
     };
 
     return (
+        <>
         <TestArea onClick={startGame} clickable={status === "idle"}>
             {status === "idle" && (
                 <IntroScreen 
@@ -144,6 +146,9 @@ const VerbalMemoryTest: React.FC = () => {
                 />
             )}
         </TestArea>
+
+        <OtherTests currentId="verbal-memory" />
+        </>
     );
 };
 

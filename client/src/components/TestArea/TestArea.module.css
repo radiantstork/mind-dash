@@ -1,7 +1,7 @@
 .testArea {
     cursor: default;
     user-select: none;
-    height: 85vh;
+    height: 90vh;
 
     display: flex;
     flex-direction: column;
@@ -13,6 +13,8 @@
 
     margin-top: 2rem;
     border-bottom: 1px solid #dbd7d7;
+
+    box-shadow: 0 2px 12px rgba(255, 255, 255, 0.505);
 }
   
 .clickable {

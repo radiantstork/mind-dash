@@ -5,9 +5,10 @@ import styles from "./ClickSpeedTestDefault.module.css";
 import TestArea from "../../components/TestArea/TestArea.tsx";
 import IntroScreen from "../../components/IntroScreen/IntroScreen.tsx";
 import ResultsScreen from "../../components/ResultsScreen/ResultsScreen.tsx";
+import OtherTests from "../../components/OtherTests/OtherTests.tsx";
 
 const ClickSpeedTest: React.FC = () => {
-    const [clicks, setClicks] = useState(0);
+    const [clicks, setClicks] = useState<number>(0);
     const [startTime, setStartTime] = useState<number | null>(null);
     const [elapsedTime, setElapsedTime] = useState<number | null>(null);
 
@@ -40,34 +41,39 @@ const ClickSpeedTest: React.FC = () => {
     };
 
     // score = clicks per second
-    const score = elapsedTime ? (clicks / elapsedTime).toFixed(2) : "0.00";
+    const score: string = elapsedTime ? (clicks / elapsedTime).toFixed(2) : "0.00";
 
     return (
-        <TestArea onClick={handleClick} clickable={status === "idle" || status === "running"}>
-            {status === "idle" && (
-                <IntroScreen 
-                    title="Click Speed Test" 
-                    description="How fast can you click 50 times?" />
-            )}
+        <>
+            <TestArea onClick={handleClick} clickable={status === "idle" || status === "running"}>
+                {status === "idle" && (
+                    <IntroScreen 
+                        title="Click Speed Test" 
+                        description="How fast can you click 50 times?" />
+                )}
 
-            {status === "running" && (
-                <>
-                    <p className={styles.clickText}>
-                        Click me!
-                    </p>
+                {status === "running" && (
+                    <>
+                        <p className={styles.clickText}>
+                            Click me!
+                        </p>
 
-                    <p className={styles.counter}>
-                        Clicks: {clicks}
-                    </p>
-                </>
-            )}
+                        <p className={styles.counter}>
+                            Clicks: {clicks}
+                        </p>
+                    </>
+                )}
 
-            {status === "over" && (
-                <ResultsScreen 
-                    description={`Clicks per second: ${score}`} 
-                    handleRestart={restartTest}/>
-            )}
-        </TestArea>
+                {status === "over" && (
+                    <ResultsScreen 
+                        description={`Clicks per second: ${score}`} 
+                        handleRestart={restartTest}/>
+                )}
+
+            </TestArea>
+
+            <OtherTests currentId="click-speed"/>
+        </>
     );
 };
 

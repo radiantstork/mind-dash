@@ -8,6 +8,7 @@ import TestArea from "../../components/TestArea/TestArea.tsx";
 import IntroScreen from "../../components/IntroScreen/IntroScreen.tsx";
 import ResultsScreen from "../../components/ResultsScreen/ResultsScreen.tsx";
 import Hearts from "../../components/Hearts/Hearts.tsx";
+import OtherTests from "../../components/OtherTests/OtherTests.tsx";
 
 const WORD_SET: Set<string> = new Set(
     words.split("\n").map(w => w.trim().toLowerCase())
@@ -126,6 +127,7 @@ const LanguageDexterityTest: React.FC = () => {
     }
 
     return (
+        <>
         <TestArea onClick={() => setStatus("running")} clickable={status === "idle"}>
             {status === "idle" && (
                 <IntroScreen 
@@ -162,6 +164,9 @@ const LanguageDexterityTest: React.FC = () => {
                     handleRestart={restartTest}/>
             )}
         </TestArea>
+
+        <OtherTests currentId="language-dexterity" />
+        </>
     );
 };
 

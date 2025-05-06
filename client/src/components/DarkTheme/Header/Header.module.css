@@ -4,12 +4,13 @@
     align-items: center;
     padding: 1.5rem 3rem;
     background-color: #111;
-
+    height: 10vh;
     border-bottom: 1px solid #dbd7d7;
     box-shadow: 0 2px 12px #dbd7d75a;
 
     position: fixed;
     width: 100%;
+    z-index: 1000;
 }
   
 .logo {
