@@ -1,0 +1,193 @@
+.verbal-memory-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+  font-family: 'Arial', sans-serif;
+}
+
+.game-title {
+  color: #2c3e50;
+  margin-bottom: 2rem;
+}
+
+/* Start Screen Styles */
+.game-start-screen {
+  background: #f8f9fa;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.instructions {
+  margin-bottom: 2rem;
+  line-height: 1.6;
+  color: #495057;
+}
+
+.start-button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.start-button:hover {
+  background-color: #2980b9;
+}
+
+/* Active Game Styles */
+.game-active-screen {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.score-display {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+  color: black;
+}
+
+.score-value, .level-value {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.word-display-area {
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+.current-word {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.loading-text {
+  color: #7f8c8d;
+}
+
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.choice-button {
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.choice-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.new-button {
+  background-color: #2ecc71;
+  color: white;
+}
+
+.new-button:hover {
+  background-color: #27ae60;
+}
+
+.seen-button {
+  background-color: #9b59b6;
+  color: white;
+}
+
+.seen-button:hover {
+  background-color: #8e44ad;
+}
+
+/* Game Over Styles */
+.game-over-screen {
+  background: #f8f9fa;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.game-over-title {
+  color: #e74c3c;
+  margin-bottom: 1.5rem;
+}
+
+.results-summary {
+  margin-bottom: 2rem;
+  color: black;
+}
+
+.final-score, .final-level {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.play-again-button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-bottom: 2rem;
+}
+
+.play-again-button:hover {
+  background-color: #2980b9;
+}
+
+/* High Scores Styles */
+.high-scores {
+  margin-top: 2rem;
+}
+
+.high-scores-title {
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.scores-list {
+  list-style: none;
+  padding: 0;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.score-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  background: #ecf0f1;
+  margin-bottom: 0.5rem;
+  border-radius: 4px;
+}
+
+.score-rank {
+  font-weight: bold;
+}
+
+.score-value {
+  flex-grow: 1;
+  text-align: center;
+}

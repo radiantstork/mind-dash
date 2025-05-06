@@ -47,9 +47,11 @@ export default function LoginForm() {
         id: data.user.id,
         username: data.user.username,
       });
+      // Redirect to home or previous page
       navigate("/");
       toast.success("Logged in successfully");
     } catch (err) {
+      console.log(err)
       catchAxiosError(err);
       setLoading(false);
     }

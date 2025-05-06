@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import styles from "./VerbalMemoryTest.module.css";
 
@@ -9,6 +9,9 @@ import Hearts from "../../components/Hearts/Hearts.tsx";
 import OtherTests from "../../components/OtherTests/OtherTests.tsx";
 
 import words from "../words.txt?raw";
+import GameStats from "../GameStats.tsx";
+import customFetch from "../../services/custom_fetch.ts";
+import {VerbalMemoryGameState} from "../../types/games.ts";
 
 const MAX_SCORE = 5000;
 const BATCH_SIZE = 50;
@@ -19,10 +22,17 @@ const WORD_LIST: Array<string> = Array.from(
 
 const VerbalMemoryTest: React.FC = () => {
     const [status, setStatus] = useState<"idle" | "running" | "over">("idle");
-    const [seenWords, setSeenWords] = useState<string[]>([]);
-    const [currentWord, setCurrentWord] = useState<string>("");
-    const [score, setScore] = useState<number>(0);
-    const [lives, setLives] = useState<number>(3);
+    const [state, setState] = useState<VerbalMemoryGameState>({
+    seenWords: [],
+    currentWord: '',
+    score: 0,
+    lives: 2,
+    gameStarted: false,
+    gameOver: false,
+    loading: false,
+    highScores: []
+  });
+        const [showStats, setShowStats] = useState(true);
 
     const [wordPool, setWordPool] = useState<string[]>([]);
     const [usedWords, setUsedWords] = useState<Set<string>>(new Set());
@@ -49,7 +59,7 @@ const VerbalMemoryTest: React.FC = () => {
     const loadNewWord = () => {
         if (wordPool.length === 0) return;
 
-        const seenInPool = seenWords.filter(word => wordPool.includes(word)).length;
+        const seenInPool = state.seenWords.filter(word => wordPool.includes(word)).length;
         const needRefresh = (seenInPool / wordPool.length) >= REFRESH_THRESHOLD;
 
         if (needRefresh) {
@@ -63,35 +73,47 @@ const VerbalMemoryTest: React.FC = () => {
         }
 
         const randomIndex = Math.floor(Math.random() * wordPool.length);
-        setCurrentWord(wordPool[randomIndex]);
+        setState(prev => ({
+      ...prev,
+      currentWord: wordPool[randomIndex]
+    }));
     };
 
     const handleChoice = (hasSeen: boolean): void => {
         if (status !== "running") return;
 
-        const alreadySeen = seenWords.includes(currentWord);
+        const alreadySeen = state.seenWords.includes(state.currentWord);
         const correct = hasSeen === alreadySeen;
 
         if (correct) {
-            const newScore = score + 1;
-            setScore(newScore);
-
+            const newScore = state.score + 1;
+setState(prev => ({
+      ...prev,
+      score: newScore
+    }));
             if (newScore >= MAX_SCORE) {
                 setStatus("over");
                 return;
             }
 
             if (!alreadySeen) {
-                setSeenWords(prev => [...prev, currentWord]);
+                setState(prev => ({
+      ...prev,
+      seenWords: [...state.seenWords, state.currentWord]
+    }))
             }
 
             loadNewWord();
         } else {
-            const newLives = lives - 1;
+            const newLives = state.lives - 1;
             if (newLives <= 0) {
+                endGame();
                 setStatus("over");
             } else {
-                setLives(newLives);
+                setState(prev => ({
+      ...prev,
+                    lives: newLives
+    }))
                 loadNewWord();
             }
         }
@@ -101,11 +123,41 @@ const VerbalMemoryTest: React.FC = () => {
         const initialWords = getRandomWords(BATCH_SIZE, new Set());
         setWordPool(initialWords);
         setUsedWords(new Set(initialWords));
-        setSeenWords([]);
-        setScore(0);
-        setLives(3);
+        setState(prev => ({
+      ...prev,
+            seenWords: [],
+            score: 0,
+            lives: 3
+    }))
+
         setStatus("running");
     };
+
+    const endGame = async () => {
+    try {
+      const response = await customFetch.post(
+          '/api/verbal-memory/tests/',
+          {
+        score: state.score}
+      );
+
+      setState(prev => ({
+        ...prev,
+        gameOver: true,
+        gameStarted: false,
+        highScores: response.data?.results
+          ? [...response.data.results.slice(0, 5)]
+          : prev.highScores
+      }));
+    } catch (error) {
+      console.error('Error saving score:', error);
+      setState(prev => ({
+        ...prev,
+        gameOver: true,
+        gameStarted: false
+      }));
+    }
+  };
 
     const restartGame = () => {
         setStatus("idle");
@@ -113,41 +165,51 @@ const VerbalMemoryTest: React.FC = () => {
 
     return (
         <>
-        <TestArea onClick={startGame} clickable={status === "idle"}>
-            {status === "idle" && (
-                <IntroScreen 
-                    title="Verbal Memory Test" 
-                    description="Can you remember which words you've seen?" />
-            )}
+            <TestArea onClick={startGame} clickable={status === "idle"}>
+                {status === "idle" && (
+                    <IntroScreen
+                        title="Verbal Memory Test"
+                        description="Can you remember which words you've seen?"/>
+                )}
 
-            {status === "running" && (
-                <div className={styles.container}>
-                    <p className={styles.score}>Score: {score}</p>
+                {status === "running" && (
+                    <div className={styles.container}>
+                        <p className={styles.score}>Score: {state.score}</p>
 
-                    <h1 className={styles.word}>{currentWord}</h1>
+                        <h1 className={styles.word}>{state.currentWord}</h1>
 
-                    <div className={styles.answersContainer}>
-                        <button onClick={() => handleChoice(true)} className={styles.yes}>
-                            YES
-                        </button>
-                        <button onClick={() => handleChoice(false)} className={styles.no}>
-                            NO
-                        </button>
+                        <div className={styles.answersContainer}>
+                            <button onClick={() => handleChoice(true)} className={styles.yes}>
+                                YES
+                            </button>
+                            <button onClick={() => handleChoice(false)} className={styles.no}>
+                                NO
+                            </button>
+                        </div>
+
+                        <Hearts heartsLeft={state.lives}/>
                     </div>
+                )}
 
-                    <Hearts heartsLeft={lives} />
-                </div>
-            )}
+                {status === "over" && (
+                    <ResultsScreen
+                        description={`Your final score: ${state.score}`}
+                        handleRestart={restartGame}
+                    />
+                )}
+            </TestArea>
 
-            {status === "over" && (
-                <ResultsScreen
-                    description={`Your final score: ${score}`}
-                    handleRestart={restartGame}
-                />
-            )}
-        </TestArea>
-
-        <OtherTests currentId="verbal-memory" />
+            <OtherTests currentId="verbal-memory"/>
+            <div className="game-container">
+                {showStats && (
+                    <>
+                        <GameStats gameName="verbal-memory"/>
+                        <button onClick={() => setShowStats(false)} className="start-button">
+                            Hide Stats
+                        </button>
+                    </>
+                )}
+            </div>
         </>
     );
 };

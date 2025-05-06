@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import LogoutButton from './LogoutButton'
 
 export default function Home() {
   return (
@@ -11,7 +12,7 @@ export default function Home() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         <Link to="/time-perception" style={buttonStyle}>🕒 Time Perception Test</Link>
         <Link to="/login" style={buttonStyle}>🔐 Login</Link>
-        {/* You can add more links as you build new tests */}
+                <LogoutButton />
       </div>
     </div>
   );
@@ -27,4 +28,3 @@ const buttonStyle: React.CSSProperties = {
   fontWeight: 500,
   transition: 'all 0.2s ease-in-out',
 };
-
