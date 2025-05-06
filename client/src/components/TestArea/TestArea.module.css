@@ -2,6 +2,7 @@
     cursor: default;
     user-select: none;
     height: fit-content;
+    min-height: 600px;
 
     display: flex;
     flex-direction: column;

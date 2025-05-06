@@ -16,6 +16,7 @@ import Login from "./pages/LoginPage.tsx";
 //import RegisterPage from './pages/RegisterPage.tsx';
 import VisualMemory from './pages/VisualMemoryTest/VisualMemory.tsx';
 import { ToastContainer } from 'react-toastify';
+import RegisterPage from './pages/RegisterPage.tsx';
 
 function App() {
   return (<div>
@@ -35,6 +36,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<RegisterPage />} />
         <Route path="/time-perception" element={<TimePerceptionTest />} />
         <Route path="/language-dexterity" element={<LanguageDexterityTest />} />
         <Route path="/click-speed" element={<ClickSpeedTest />} />

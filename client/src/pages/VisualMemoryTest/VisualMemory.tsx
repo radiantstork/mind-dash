@@ -4,6 +4,9 @@ import TestArea from '../../components/TestArea/TestArea';
 import IntroScreen from '../../components/IntroScreen/IntroScreen';
 import OtherTests from '../../components/OtherTests/OtherTests';
 import ResultsScreen from '../../components/ResultsScreen/ResultsScreen';
+import customFetch from '../../services/custom_fetch';
+import { useUserContext } from '../../context/UserContext';
+import { catchAxiosError } from '../../services/catch_axios_error';
 
 type TileState = {
   isPattern: boolean;
@@ -47,8 +50,11 @@ const initialGameState: GameState = {
 
 
 const VisualMemory = () => {
+  const { user } = useUserContext();
+  console.log(user.isAuthenticated);
   const [gameState, setGameState] = useState(initialGameState);
   const [currentLevel, setCurrentLevel] = useState<string>("1");
+  const { user: { isAuthenticated } } = useUserContext();
 
   const generatePattern = () => {
     const totalTiles = gameState.gridSize * gameState.gridSize;
@@ -279,6 +285,23 @@ const VisualMemory = () => {
     return styles.tile;
   };
 
+  async function handleGameEnd() {
+    if (!isAuthenticated) {
+      return;
+    }
+
+    try {
+      const response = await customFetch.post('/api/submit/', {
+        score: gameState.level - 1,
+        created_at: new Date(),
+        test_name: 'visual-memory'
+      });
+      console.log(response);
+    } catch (err) {
+      catchAxiosError(err);
+    }
+  }
+
   return (<>
     <TestArea onClick={handleGameStart} clickable={gameState.start}>
       {gameState.start && (
@@ -342,7 +365,8 @@ const VisualMemory = () => {
         <ResultsScreen
           description={`You can memorize up to ${gameState.level - 1} tiles at once. 
             ${gameState.level >= gameState.bossMusicLevel ? "Not bad" : ""}`}
-          handleRestart={handleGameReset} />
+          handleRestart={handleGameReset}
+          onGameEnd={handleGameEnd} />
       )}
     </TestArea>
     <OtherTests currentId="visual-memory" />

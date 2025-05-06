@@ -1,23 +1,36 @@
+import { useEffect, useRef } from "react";
 import RestartButton from "../RestartButton/RestartButton";
 import styles from "./ResultsScreen.module.css";
 
 type Props = {
     description: string;
     handleRestart: () => void;
+    onGameEnd: () => Promise<unknown>;
 };
 
-const ResultsScreen: React.FC<Props> = ({ description, handleRestart }) => (
-    <div className={styles.container}>
-        <h1 className={styles.title}>
-            Your Result
-        </h1>
+const ResultsScreen: React.FC<Props> = ({ description, handleRestart, onGameEnd }) => {
+    const hasFetched = useRef(false);
 
-        <p className={styles.description}>
-            {description}
-        </p>
+    useEffect(() => {
+        if (hasFetched.current) return;
+        hasFetched.current = true;
+        (async () => {
+            await onGameEnd();
+        })();
+    }, []);
 
-        <RestartButton onClick={handleRestart} />
-    </div>
-);
+    return (
+        <div className={styles.container}>
+            <h1 className={styles.title}>
+                Your Result
+            </h1>
 
+            <p className={styles.description}>
+                {description}
+            </p>
+
+            <RestartButton onClick={handleRestart} />
+        </div>
+    );
+}
 export default ResultsScreen;
