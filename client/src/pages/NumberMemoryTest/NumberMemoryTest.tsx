@@ -131,9 +131,12 @@ const NumberMemoryTest: React.FC = () => {
                 {showStats && (
                     <>
                         <GameStats gameName="number-memory"/>
-                        <button onClick={() => setShowStats(false)} className="start-button">
+                        <div className="hide-stats" >
+                        <button
+                            onClick={() => setShowStats(false)} className="start-button">
                             Hide Stats
                         </button>
+                        </div>
                     </>
                 )}
             </div>
