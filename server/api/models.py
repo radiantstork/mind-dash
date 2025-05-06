@@ -53,3 +53,12 @@ class ChimpTest(models.Model):
 
     def __str__(self):
         return f"{self.user or 'Anonymous'} - Level {self.score}"
+
+
+class NumberMemoryTest(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    score = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-score', 'created_at']

@@ -17,4 +17,5 @@ path('score-distribution/', views.score_distribution, name='score-distribution')
     path('auth/logout/', LogoutView.as_view(), name='logout'),
     path('protected-data/', ProtectedDataView.as_view(), name='protected-data'),
     path('csrf/', get_csrf_token),
+    path('number-memory/tests/', views.NumberMemoryTestView.as_view(), name='number-memory-tests'),
 ]

@@ -4,11 +4,11 @@ from django.http import HttpResponse
 from rest_framework import generics
 from rest_framework.decorators import api_view
 from rest_framework.permissions import AllowAny
-from django.db.models import CharField
 
-from .models import VerbalMemoryTest, WordPool, ChimpTest
+from .models import VerbalMemoryTest, WordPool, ChimpTest, NumberMemoryTest
 from .serializers.verbal_memory import VerbalMemoryTestSerializer
 from .serializers.chimp import ChimpTestSerializer
+from .serializers.number_memory import NumberMemoryTestSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -79,6 +79,8 @@ def user_score_history(request):
         tests = VerbalMemoryTest.objects.filter(user=request.user).order_by('created_at')
     elif game_name == 'chimp-test':
         tests = ChimpTest.objects.filter(user=request.user).order_by('created_at')
+    elif game_name == 'number-memory':
+        tests = NumberMemoryTest.objects.filter(user=request.user).order_by('created_at')
     else:
         tests = []
     data = [{
@@ -96,6 +98,8 @@ def score_distribution(request):
         model = VerbalMemoryTest
     elif game_name == 'chimp-test':
         model = ChimpTest
+    elif game_name == 'number-memory':
+        model = NumberMemoryTest
     else:
         model = VerbalMemoryTest
     stats = model.objects.values('user').annotate(
@@ -221,4 +225,19 @@ class LogoutView(APIView):
             status=status.HTTP_200_OK
         )
 
+class NumberMemoryTestView(APIView):
+    permission_classes = [AllowAny]
 
+    def get(self, request):
+        tests = NumberMemoryTest.objects.all()
+        serializer = NumberMemoryTestSerializer(tests, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = NumberMemoryTestSerializer(data=request.data)
+        if serializer.is_valid():
+            # Handle user assignment properly
+            user = request.user if not isinstance(request.user, AnonymousUser) else None
+            serializer.save(user=user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
