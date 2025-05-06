@@ -3,8 +3,9 @@ import { Routes, Route } from "react-router-dom";
 
 import DarkTheme from "./components/DarkTheme/DarkTheme.tsx";
 
-import Home from "./pages/Home";
+import Home from "./pages/Home.tsx";
 import Login from "./pages/Login";
+import ScrollToTop from './components/ScrollToTop.tsx';
 
 import TimePerceptionTest from "./pages/TimePerceptionTest/TimePerceptionTest.tsx";
 import LanguageDexterityTest from "./pages/LanguageDexterityTest/LanguageDexterityTest.tsx";
@@ -17,6 +18,8 @@ function App() {
   return (
     <>
     <DarkTheme>
+      <ScrollToTop />
+
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
