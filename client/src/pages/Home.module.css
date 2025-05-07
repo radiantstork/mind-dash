@@ -1,0 +1,82 @@
+.homePage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    margin-top: 15vh;
+    margin-bottom: 10vh;
+}
+
+.introduction {
+    text-align: center;
+}
+
+.title {
+    font-size: 3rem;
+    color: rgb(224, 212, 212);
+}
+
+.description {
+    text-align: justify;
+    text-align-last: center;
+
+    margin-top: 0.5rem;
+    font-size: 1.3rem;
+    width: 50vw;
+
+    color: rgb(203, 199, 199);
+}
+
+/* -------------------------------- */
+.testGrid {
+    margin-top: 4rem;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4rem;
+    justify-items: center;
+}
+  
+  .testCard {
+    height: 27vh;
+    max-width: 400px;
+  
+    background: linear-gradient(145deg, #1a1a1a, #2e2e2e);
+    box-shadow: 0 8px 20px rgba(187, 186, 186, 0.142);
+  
+    border: 2px solid #747272;
+    border-radius: 1rem;
+    padding: 1rem;
+  
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-decoration: none;
+  }
+  
+  .testCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(187, 186, 186, 0.226);
+  }
+  
+  .testTitle {
+    font-size: 1.7rem;
+    color: #d2caca;
+    text-align: center;
+  }
+  
+  .testDescription {
+    margin-top: 0.5rem;
+    font-size: 1.1rem;
+    color: #d0d0d0;
+    text-align: justify;
+    text-align-last: center;
+  }
+  
+  .fstTestDesc {
+    margin-bottom: 0.5rem;
+  }
+  
+  .sndTestDesc {
+    font-style: italic;
+    color: #bcbcbc;
+  }

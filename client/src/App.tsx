@@ -3,14 +3,16 @@ import { Routes, Route } from "react-router-dom";
 
 import DarkTheme from "./components/DarkTheme/DarkTheme.tsx";
 
+import Home from "./pages/Home.tsx";
+import Login from "./pages/LoginPage.tsx";
+import ScrollToTop from './components/ScrollToTop.tsx';
+
 import TimePerceptionTest from "./pages/TimePerceptionTest/TimePerceptionTest.tsx";
 import LanguageDexterityTest from "./pages/LanguageDexterityTest/LanguageDexterityTest.tsx";
 import ClickSpeedTest from "./pages/ClickSpeedTest/ClickSpeedTest.tsx";
 import NumberMemoryTest from './pages/NumberMemoryTest/NumberMemoryTest.tsx';
 import ColorMemoryTest from './pages/ColorMemoryTest/ColorMemoryTest.tsx';
 import VerbalMemoryTest from './pages/VerbalMemoryTest/VerbalMemoryTest.tsx';
-import Home from "./pages/Home.js";
-import Login from "./pages/LoginPage.tsx";
 //import VerbalMemory from "./pages/VerbalMemory.tsx";
 //import ChimpTest from "./pages/ChimpTest.tsx";
 //import RegisterPage from './pages/RegisterPage.tsx';
@@ -33,6 +35,8 @@ function App() {
           pauseOnHover
           theme="light"
         />
+      <ScrollToTop />
+
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
