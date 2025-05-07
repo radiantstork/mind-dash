@@ -3,7 +3,6 @@
 - Authors
 - Example: https://github.com/AndraRaco/App-Receipt-Scanner
 
-De exemplu, puteți să creați un fișier README cu linkuri sau text pentru fiecare item de mai sus
 
 ### Cerinte (de inclus si dezvoltat in documentatie)
 - [ ] Live demo pentru aplicația dezvoltată.
@@ -19,3 +18,5 @@ De exemplu, puteți să creați un fișier README cu linkuri sau text pentru fie
 - [ ] design patterns - 1 pct
 - [ ] prompt engineering: documentarea folosirii toolurilor de AI in timpul dezvoltarii software (d. ex. GitHub Copilot, chatGPT, Microsoft Copilot) - 2 pct
 - [ ] **raport individual**
+
+> De exemplu, puteți să creați un fișier README cu linkuri sau text pentru fiecare item de mai sus
