@@ -63,6 +63,14 @@ const testCards: TestCardData[] = [
             "If somebody told you their phone number, could you remember it on the first attempt?",
         route: "/number-memory",
     },
+    {
+        title: "Visual Memory Test 👁️",
+        description1:
+            "You have to memorize the pattern shown on the grid and reproduce it. But wait, the grid is changing...",
+        description2:
+            "Can you remember the shown pattern? Keep in mind: 3 misclicks and 3 lives. Bonus: training mode ;)",
+        route: "/visual-memory",
+    },
 ];
 
 export default function Home() {
@@ -92,13 +100,13 @@ export default function Home() {
     );
 }
 
-const buttonStyle: React.CSSProperties = {
-  padding: '12px 24px',
-  backgroundColor: '#ffffff22',
-  border: '1px solid #ffffff44',
-  borderRadius: 8,
-  color: '#fff',
-  textDecoration: 'none',
-  fontWeight: 500,
-  transition: 'all 0.2s ease-in-out',
-};
+// const buttonStyle: React.CSSProperties = {
+//   padding: '12px 24px',
+//   backgroundColor: '#ffffff22',
+//   border: '1px solid #ffffff44',
+//   borderRadius: 8,
+//   color: '#fff',
+//   textDecoration: 'none',
+//   fontWeight: 500,
+//   transition: 'all 0.2s ease-in-out',
+// };

@@ -22,19 +22,19 @@ import RegisterPage from './pages/RegisterPage.tsx';
 
 function App() {
   return (<div>
-          <DarkTheme>
+    <DarkTheme>
       <ToastContainer
-          position="bottom-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="light"
-        />
+        position="bottom-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <ScrollToTop />
 
       <Routes>
@@ -49,8 +49,8 @@ function App() {
         <Route path="/verbal-memory" element={<VerbalMemoryTest />} />
         <Route path="/visual-memory" element={<VisualMemory />} />
       </Routes>
-          </DarkTheme>
-    </div>
+    </DarkTheme>
+  </div>
   );
 }
 

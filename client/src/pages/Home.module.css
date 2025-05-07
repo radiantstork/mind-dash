@@ -37,7 +37,7 @@
 }
   
   .testCard {
-    height: 27vh;
+    height: 250px;
     max-width: 400px;
   
     background: linear-gradient(145deg, #1a1a1a, #2e2e2e);

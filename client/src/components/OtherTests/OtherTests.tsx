@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./OtherTests.module.css";
+import { Link } from "react-router-dom";
 
 type Test = {
     title: string;
@@ -46,7 +47,7 @@ const allTests: Test[] = [
 
     {
         title: "Verbal Memory Test",
-        description: "Can you remember which words you’ve seen?",
+        description: "Can you remember which words you've seen?",
         icon: "🗣️",
         id: "verbal-memory"
     },
@@ -57,13 +58,6 @@ const allTests: Test[] = [
         icon: "👁️",
         id: "visual-memory"
     },
-
-    // { 
-    //     title: "Sample Test",
-    //     description: "Sample Description",
-    //     icon: "🗣️",
-    //     id: "sample",
-    // }
 ];
 
 type Props = {
@@ -85,9 +79,9 @@ const OtherTests: React.FC<Props> = ({ currentId }) => {
                     const cardClass = isLeft ? styles.testCardLeft : styles.testCardRight;
 
                     return (
-                        <a
+                        <Link
                             key={test.id}
-                            href={`/${test.id}`}
+                            to={`/${test.id}`}
                             className={`${styles.testCard} ${cardClass}`}>
 
                             <div className={styles.icon}>
@@ -103,7 +97,7 @@ const OtherTests: React.FC<Props> = ({ currentId }) => {
                                     {test.description}
                                 </p>
                             </div>
-                        </a>
+                        </Link>
                     );
                 })}
             </div>

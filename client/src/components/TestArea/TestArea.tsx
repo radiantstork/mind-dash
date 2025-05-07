@@ -12,7 +12,6 @@ const TestArea: React.FC<Props> = ({ children, onClick, clickable = false }) => 
         <div
             className={`${styles.testArea} ${clickable ? styles.clickable : ""}`}
             onClick={clickable ? onClick : undefined}>
-
             {children}
         </div>
     );
