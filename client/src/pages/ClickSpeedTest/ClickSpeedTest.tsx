@@ -6,6 +6,9 @@ import TestArea from "../../components/TestArea/TestArea.tsx";
 import IntroScreen from "../../components/IntroScreen/IntroScreen.tsx";
 import ResultsScreen from "../../components/ResultsScreen/ResultsScreen.tsx";
 import OtherTests from "../../components/OtherTests/OtherTests.tsx";
+import { useUserContext } from "../../context/UserContext.tsx";
+import { catchAxiosError } from "../../services/catch_axios_error.ts";
+import customFetch from "../../services/custom_fetch.ts";
 
 const ClickSpeedTest: React.FC = () => {
     const [clicks, setClicks] = useState<number>(0);
@@ -13,6 +16,7 @@ const ClickSpeedTest: React.FC = () => {
     const [elapsedTime, setElapsedTime] = useState<number | null>(null);
 
     const [status, setStatus] = useState<"idle" | "running" | "over">("idle");
+    const { user: { isAuthenticated } } = useUserContext();
 
     const handleClick = () => {
         if (status === "idle") {
@@ -40,15 +44,32 @@ const ClickSpeedTest: React.FC = () => {
         setElapsedTime(null);
     };
 
-    // score = clicks per second
-    const score: string = elapsedTime ? (clicks / elapsedTime).toFixed(2) : "0.00";
+    async function handleGameEnd() {
+        if (!isAuthenticated) {
+            return;
+        }
+        
+        try {
+            if (elapsedTime === null) {
+                throw new Error("System error: Elapsed time is null");
+            }
+            const response = await customFetch.post('/api/submit/', {
+                score: Math.floor((clicks / elapsedTime) * 100),
+                created_at: new Date(),
+                test_name: 'click-speed'
+            });
+            console.log(response);
+        } catch (err) {
+            catchAxiosError(err);
+        }
+    }
 
     return (
         <>
             <TestArea onClick={handleClick} clickable={status === "idle" || status === "running"}>
                 {status === "idle" && (
-                    <IntroScreen 
-                        title="Click Speed Test" 
+                    <IntroScreen
+                        title="Click Speed Test"
                         description="How fast can you click 50 times?" />
                 )}
 
@@ -65,14 +86,16 @@ const ClickSpeedTest: React.FC = () => {
                 )}
 
                 {status === "over" && (
-                    <ResultsScreen 
-                        description={`Clicks per second: ${score}`} 
-                        handleRestart={restartTest}/>
+                    <ResultsScreen
+                        description={`Clicks per second: ${elapsedTime ? (clicks / elapsedTime).toFixed(2) : "0.00"}`}
+                        handleRestart={restartTest}
+                        onGameEnd={handleGameEnd}
+                    />
                 )}
 
             </TestArea>
 
-            <OtherTests currentId="click-speed"/>
+            <OtherTests currentId="click-speed" />
         </>
     );
 };

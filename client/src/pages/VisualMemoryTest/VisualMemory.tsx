@@ -13,6 +13,8 @@ type TileState = {
   isClicked: boolean;
 };
 
+type GameStage = "start" | "pattern_display" | "playable" | "finish" | "game_over";
+
 type GameState = {
   mode: 'training' | 'official';
 
@@ -24,11 +26,7 @@ type GameState = {
   lives: number;
   bossMusicLevel: number;
 
-  start: boolean;
-  patternDisplay: boolean;
-  playable: boolean;
-  finished: boolean;
-  gameOver: boolean;
+  stage: GameStage;
 }
 
 const initialGameState: GameState = {
@@ -40,12 +38,7 @@ const initialGameState: GameState = {
   lives: 3,
   gridSize: 3,
   bossMusicLevel: 7,
-
-  start: true,
-  patternDisplay: false,
-  playable: false,
-  finished: false,
-  gameOver: false,
+  stage: "start"
 }
 
 
@@ -106,8 +99,7 @@ const VisualMemory = () => {
     setGameState({
       ...initialGameState,
       mode: "training",
-      start: false,
-      patternDisplay: true,
+      stage: "pattern_display",
       level: actualLevel,
       gridSize: getGridSize(actualLevel)
     });
@@ -119,8 +111,7 @@ const VisualMemory = () => {
     setGameState(prev => {
       return {
         ...prev,
-        start: false,
-        patternDisplay: true,
+        stage: "pattern_display"
       }
     });
   }
@@ -131,7 +122,7 @@ const VisualMemory = () => {
 
   // ------------Pattern display zone--------------
   useEffect(() => {
-    if (!gameState.patternDisplay) {
+    if (gameState.stage != "pattern_display") {
       return;
     }
 
@@ -147,8 +138,7 @@ const VisualMemory = () => {
       setGameState(prev => {
         return {
           ...prev,
-          patternDisplay: false,
-          playable: true
+          stage: "playable"
         }
       })
     }, 2000);
@@ -158,11 +148,11 @@ const VisualMemory = () => {
       clearTimeout(memorizeTimeout);
       clearTimeout(preparationTimeout);
     }
-  }, [gameState.patternDisplay]);
+  }, [gameState.stage]);
 
   // -------------Playable zone------------------
   const handleTileClick = (index: number) => {
-    if (!gameState.playable) return;
+    if (gameState.stage !== "playable") return;
 
     if (gameState.tiles[index].isClicked) return;
 
@@ -182,8 +172,7 @@ const VisualMemory = () => {
       setGameState(prev => {
         return {
           ...prev,
-          playable: false,
-          finished: true
+          stage: "finish"
         }
       });
     }
@@ -191,7 +180,7 @@ const VisualMemory = () => {
 
 
   useEffect(() => {
-    if (!gameState.playable) {
+    if (gameState.stage !== "playable") {
       return;
     }
 
@@ -206,8 +195,7 @@ const VisualMemory = () => {
       setGameState(prev => {
         return {
           ...prev,
-          playable: false,
-          finished: true
+          stage: "finish"
         }
       })
     }
@@ -216,7 +204,7 @@ const VisualMemory = () => {
 
   //----------Finish zone--------------
   useEffect(() => {
-    if (!gameState.finished) {
+    if (gameState.stage !== "finish") {
       return;
     }
 
@@ -232,16 +220,14 @@ const VisualMemory = () => {
             setGameState(prev => {
               return {
                 ...prev,
-                finished: false,
-                gameOver: true,
+                stage: "game_over"
               }
             })
           } else {
             setGameState(prev => {
               return {
                 ...prev,
-                finished: false,
-                patternDisplay: true,
+                stage: "pattern_display",
                 lives: gameState.lives - 1,
                 misclicks: initialGameState.misclicks,
               }
@@ -251,8 +237,7 @@ const VisualMemory = () => {
           setGameState(prev => {
             return {
               ...prev,
-              patternDisplay: true,
-              finished: false,
+              stage: "pattern_display",
               level: gameState.level + 1,
               gridSize: getGridSize(gameState.level + 1),
               misclicks: initialGameState.misclicks,
@@ -264,19 +249,18 @@ const VisualMemory = () => {
           return {
             ...prev,
             misclicks: initialGameState.misclicks,
-            patternDisplay: true,
-            finished: false,
+            stage: "pattern_display"
           }
         });
       }
     }, 600);
 
-  }, [gameState.finished]);
+  }, [gameState.stage]);
 
   // ------------Game over zone----------------
 
   const getTileClass = (tile: TileState) => {
-    if (gameState.patternDisplay) {
+    if (gameState.stage === "pattern_display") {
       return tile.isPattern ? styles.tileHighlighted : styles.tile;
     }
     if (tile.isClicked) {
@@ -303,14 +287,14 @@ const VisualMemory = () => {
   }
 
   return (<>
-    <TestArea onClick={handleGameStart} clickable={gameState.start}>
-      {gameState.start && (
+    <TestArea onClick={handleGameStart} clickable={gameState.stage === "start"}>
+      {gameState.stage === "start" && (
         <IntroScreen
           title="Visual Memory Test"
           description={`Can you remember more than 10 tiles at once? - ${gameState.mode} mode`}
         />
       )}
-      {!gameState.start && !gameState.gameOver && <div className={styles.gameContainer}>
+      {gameState.stage !== "start" && gameState.stage !== "game_over" && <div className={styles.gameContainer}>
         <div className={styles.gameInfo}>
           <div>Level: {gameState.level}</div>
           {gameState.mode === "official" && <div>Lives left: {gameState.lives}</div>}
@@ -341,7 +325,7 @@ const VisualMemory = () => {
               key={index}
               className={getTileClass(tile)}
               onClick={() => handleTileClick(index)}
-              disabled={gameState.patternDisplay}
+              disabled={gameState.stage === "pattern_display"}
             />
           ))}
         </div>
@@ -361,7 +345,7 @@ const VisualMemory = () => {
           </button>
         </div>
       </div>}
-      {gameState.gameOver && (
+      {gameState.stage === "game_over" && (
         <ResultsScreen
           description={`You can memorize up to ${gameState.level - 1} tiles at once. 
             ${gameState.level >= gameState.bossMusicLevel ? "Not bad" : ""}`}

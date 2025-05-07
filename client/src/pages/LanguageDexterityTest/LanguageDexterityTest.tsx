@@ -9,6 +9,9 @@ import IntroScreen from "../../components/IntroScreen/IntroScreen.tsx";
 import ResultsScreen from "../../components/ResultsScreen/ResultsScreen.tsx";
 import Hearts from "../../components/Hearts/Hearts.tsx";
 import OtherTests from "../../components/OtherTests/OtherTests.tsx";
+import { useUserContext } from "../../context/UserContext.tsx";
+import customFetch from "../../services/custom_fetch.ts";
+import { catchAxiosError } from "../../services/catch_axios_error.ts";
 
 const WORD_SET: Set<string> = new Set(
     words.split("\n").map(w => w.trim().toLowerCase())
@@ -32,6 +35,7 @@ const LanguageDexterityTest: React.FC = () => {
     const [timeLeft, setTimeLeft] = useState(0);
     const [timerId, setTimerId] = useState<number | null>(null);
     const [usedWords, setUsedWords] = useState<Set<string>>(new Set());
+    const { user: { isAuthenticated } } = useUserContext();
 
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -126,46 +130,65 @@ const LanguageDexterityTest: React.FC = () => {
         setStatus("idle");
     }
 
+    async function handleGameEnd() {
+        if (!isAuthenticated) {
+            return;
+        }
+
+        try {
+            const response = await customFetch.post('/api/submit/', {
+                score: score,
+                created_at: new Date(),
+                test_name: 'language-dexterity'
+            });
+            console.log(response);
+        } catch (err) {
+            catchAxiosError(err);
+        }
+    }
+
     return (
         <>
-        <TestArea onClick={() => setStatus("running")} clickable={status === "idle"}>
-            {status === "idle" && (
-                <IntroScreen 
-                    title="Language Dexterity Test" 
-                    description="Can you continuously find English words containing the given letters?" />
-            )}
+            <TestArea onClick={() => setStatus("running")} clickable={status === "idle"}>
+                {status === "idle" && (
+                    <IntroScreen
+                        title="Language Dexterity Test"
+                        description="Can you continuously find English words containing the given letters?" />
+                )}
 
-            {status === "running" && (
-                <div className={styles.sndScreen}>
-                    <h2 className={styles.question}>
-                        {substring}
-                    </h2>
+                {status === "running" && (
+                    <div className={styles.sndScreen}>
+                        <h2 className={styles.question}>
+                            {substring}
+                        </h2>
 
-                    <input
-                        ref={inputRef}
-                        className={styles.input}
-                        type="text"
-                        value={input}
-                        onChange={handleInputChange}
-                        onKeyDown={handleInputKeyDown}
-                        placeholder="Enter a word"/>
+                        <input
+                            ref={inputRef}
+                            className={styles.input}
+                            type="text"
+                            value={input}
+                            onChange={handleInputChange}
+                            onKeyDown={handleInputKeyDown}
+                            placeholder="Enter a word" />
 
-                    <Hearts heartsLeft={lives} />
+                        <Hearts heartsLeft={lives} />
 
-                    <p className={styles.currentScore}>
-                        Score: {score}
-                    </p>
-                </div>
-            )}
+                        <p className={styles.currentScore}>
+                            Score: {score}
+                        </p>
+                    </div>
+                )}
 
-            {status === "over" && (
-                <ResultsScreen 
-                    description={`You lasted: ${score} ${score == 1 ? "word" : "words"}`} 
-                    handleRestart={restartTest}/>
-            )}
-        </TestArea>
+                {status === "over" && (
+                    <ResultsScreen
+                        description={`You lasted: ${score} ${score == 1 ? "word" : "words"}`}
+                        handleRestart={restartTest}
+                        onGameEnd={handleGameEnd}
+                    />
+                )}
+            </TestArea>
 
-        <OtherTests currentId="language-dexterity" />
+            <OtherTests currentId="language-dexterity" />
         </>
     );
 };

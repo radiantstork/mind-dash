@@ -6,6 +6,9 @@ import IntroScreen from "../../components/IntroScreen/IntroScreen.tsx";
 import ResultsScreen from "../../components/ResultsScreen/ResultsScreen.tsx";
 import Hearts from "../../components/Hearts/Hearts.tsx";
 import OtherTests from "../../components/OtherTests/OtherTests.tsx";
+import { useUserContext } from "../../context/UserContext.tsx";
+import { catchAxiosError } from "../../services/catch_axios_error.ts";
+import customFetch from "../../services/custom_fetch.ts";
 
 type Color = "red" | "blue" | "green" | "yellow" | "orange" | "purple" | "pink";
 
@@ -43,10 +46,11 @@ const ColorMemoryTest: React.FC = () => {
     const [clickLocked, setClickLocked] = useState<boolean>(false);
     const timers = useRef<number[]>([]);
     const availableColors: Color[] = ALL_COLORS.slice(0, Math.min(score, ALL_COLORS.length));
+    const { user: { isAuthenticated } } = useUserContext();
 
     useEffect(() => {
         if (status !== "showing") return;
-    
+
         let rawSequence: Color[];
         if (score < 8) {
             rawSequence = shuffle(availableColors).slice(0, availableColors.length);
@@ -55,7 +59,7 @@ const ColorMemoryTest: React.FC = () => {
                 availableColors[Math.floor(Math.random() * availableColors.length)]
             );
         }
-    
+
         const colorCounts: Record<Color, number> = {
             red: 0,
             blue: 0,
@@ -64,28 +68,28 @@ const ColorMemoryTest: React.FC = () => {
             orange: 0,
             purple: 0,
             pink: 0
-          };
+        };
         rawSequence.forEach(color => {
             colorCounts[color] += 1;
         });
-    
+
         const displaySequence: string[] = [];
         for (let i = 0; i < rawSequence.length; i++) {
             const current = rawSequence[i];
-            const previous =  i > 0 ? rawSequence[i - 1] : null;
-    
+            const previous = i > 0 ? rawSequence[i - 1] : null;
+
             if (previous !== null && score >= 8 && i > 0 && current === previous) {
                 displaySequence.push("#f0f0f0");
             }
-    
+
             displaySequence.push(COLORS[current]);
-    
+
             colorCounts[current]--;
         }
-    
+
         setSequence(rawSequence);
         setClickedColors(new Set());
-    
+
         let i = 0;
         const showNext = () => {
             if (i >= displaySequence.length) {
@@ -95,18 +99,18 @@ const ColorMemoryTest: React.FC = () => {
                 }, 400));
                 return;
             }
-    
+
             const color = displaySequence[i];
             setCurrentColor(color);
-    
+
             timers.current.push(window.setTimeout(() => {
                 i++;
                 showNext();
             }, 1000));
         };
-    
+
         showNext();
-    
+
         return () => {
             timers.current.forEach(clearTimeout);
             timers.current = [];
@@ -127,22 +131,22 @@ const ColorMemoryTest: React.FC = () => {
 
     const handleColorClick = (color: Color) => {
         if (status !== "input" || clickLocked) return;
-    
+
         if (score < 8 && clickedColors.has(color)) return;
-    
+
         if (score < 8) {
             setClickedColors(prev => new Set(prev).add(color));
         }
-    
+
         const updatedInput = [...userInput, color];
         setUserInput(updatedInput);
-    
+
         const correct = sequence[updatedInput.length - 1] === color;
         if (!correct) {
             const remaining = hearts - 1;
             setHearts(remaining);
             setClickLocked(true);
-    
+
             timers.current.push(window.setTimeout(() => {
                 if (remaining <= 0) {
                     setStatus("over");
@@ -163,6 +167,23 @@ const ColorMemoryTest: React.FC = () => {
         }
     }
 
+    async function handleGameEnd() {
+        if (!isAuthenticated) {
+            return;
+        }
+
+        try {
+            const response = await customFetch.post('/api/submit/', {
+                score: score - 1,
+                created_at: new Date(),
+                test_name: 'color-memory'
+            });
+            console.log(response);
+        } catch (err) {
+            catchAxiosError(err);
+        }
+    }
+
     return (
         <>
             <TestArea onClick={startTest} clickable={status === "idle"}>
@@ -176,7 +197,7 @@ const ColorMemoryTest: React.FC = () => {
                     <div className={styles.sndScreen}>
                         <div
                             className={styles.circle}
-                            style={{ backgroundColor: currentColor }}/>
+                            style={{ backgroundColor: currentColor }} />
                     </div>
                 )}
 
@@ -198,10 +219,10 @@ const ColorMemoryTest: React.FC = () => {
                                             transition: "background-color 0.4s ease-in-out",
                                         }}
                                         onClick={() => handleColorClick(color)}
-                                        disabled={isClicked}/>
-                                    );
-                                })}
-                            </div>
+                                        disabled={isClicked} />
+                                );
+                            })}
+                        </div>
                         <Hearts heartsLeft={hearts} />
                     </div>
                 )}
@@ -209,8 +230,10 @@ const ColorMemoryTest: React.FC = () => {
                 {status === "over" && (
                     <ResultsScreen
                         description={`You remembered at most: ${score - 1} ${score - 1 === 1 ? "color" : "colors"}`}
-                        handleRestart={restartTest}/>
-                    )}
+                        handleRestart={restartTest}
+                        onGameEnd={handleGameEnd}
+                    />
+                )}
             </TestArea>
 
             <OtherTests currentId="color-memory" />

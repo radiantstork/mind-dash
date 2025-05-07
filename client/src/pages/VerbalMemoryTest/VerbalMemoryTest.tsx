@@ -11,7 +11,9 @@ import OtherTests from "../../components/OtherTests/OtherTests.tsx";
 import words from "../words.txt?raw";
 import GameStats from "../GameStats.tsx";
 import customFetch from "../../services/custom_fetch.ts";
-import {VerbalMemoryGameState} from "../../types/games.ts";
+import { VerbalMemoryGameState } from "../../types/games.ts";
+import { useUserContext } from "../../context/UserContext.tsx";
+import { catchAxiosError } from "../../services/catch_axios_error.ts";
 
 const MAX_SCORE = 5000;
 const BATCH_SIZE = 50;
@@ -22,17 +24,18 @@ const WORD_LIST: Array<string> = Array.from(
 
 const VerbalMemoryTest: React.FC = () => {
     const [status, setStatus] = useState<"idle" | "running" | "over">("idle");
+    const { user: { isAuthenticated } } = useUserContext();
     const [state, setState] = useState<VerbalMemoryGameState>({
-    seenWords: [],
-    currentWord: '',
-    score: 0,
-    lives: 2,
-    gameStarted: false,
-    gameOver: false,
-    loading: false,
-    highScores: []
-  });
-        const [showStats, setShowStats] = useState(true);
+        seenWords: [],
+        currentWord: '',
+        score: 0,
+        lives: 2,
+        gameStarted: false,
+        gameOver: false,
+        loading: false,
+        highScores: []
+    });
+    const [showStats, setShowStats] = useState(true);
 
     const [wordPool, setWordPool] = useState<string[]>([]);
     const [usedWords, setUsedWords] = useState<Set<string>>(new Set());
@@ -74,9 +77,9 @@ const VerbalMemoryTest: React.FC = () => {
 
         const randomIndex = Math.floor(Math.random() * wordPool.length);
         setState(prev => ({
-      ...prev,
-      currentWord: wordPool[randomIndex]
-    }));
+            ...prev,
+            currentWord: wordPool[randomIndex]
+        }));
     };
 
     const handleChoice = (hasSeen: boolean): void => {
@@ -87,10 +90,10 @@ const VerbalMemoryTest: React.FC = () => {
 
         if (correct) {
             const newScore = state.score + 1;
-setState(prev => ({
-      ...prev,
-      score: newScore
-    }));
+            setState(prev => ({
+                ...prev,
+                score: newScore
+            }));
             if (newScore >= MAX_SCORE) {
                 setStatus("over");
                 return;
@@ -98,9 +101,9 @@ setState(prev => ({
 
             if (!alreadySeen) {
                 setState(prev => ({
-      ...prev,
-      seenWords: [...state.seenWords, state.currentWord]
-    }))
+                    ...prev,
+                    seenWords: [...state.seenWords, state.currentWord]
+                }))
             }
 
             loadNewWord();
@@ -111,9 +114,9 @@ setState(prev => ({
                 setStatus("over");
             } else {
                 setState(prev => ({
-      ...prev,
+                    ...prev,
                     lives: newLives
-    }))
+                }))
                 loadNewWord();
             }
         }
@@ -124,44 +127,62 @@ setState(prev => ({
         setWordPool(initialWords);
         setUsedWords(new Set(initialWords));
         setState(prev => ({
-      ...prev,
+            ...prev,
             seenWords: [],
             score: 0,
             lives: 3
-    }))
+        }))
 
         setStatus("running");
     };
 
     const endGame = async () => {
-    try {
-      const response = await customFetch.post(
-          '/api/verbal-memory/tests/',
-          {
-        score: state.score}
-      );
+        try {
+            // const response = await customFetch.post(
+            //     '/api/verbal-memory/tests/',
+            //     {
+            //         score: state.score
+            //     }
+            // );
 
-      setState(prev => ({
-        ...prev,
-        gameOver: true,
-        gameStarted: false,
-        highScores: response.data?.results
-          ? [...response.data.results.slice(0, 5)]
-          : prev.highScores
-      }));
-    } catch (error) {
-      console.error('Error saving score:', error);
-      setState(prev => ({
-        ...prev,
-        gameOver: true,
-        gameStarted: false
-      }));
-    }
-  };
+            setState(prev => ({
+                ...prev,
+                gameOver: true,
+                gameStarted: false,
+                // highScores: response.data?.results
+                //     ? [...response.data.results.slice(0, 5)]
+                //     : prev.highScores
+            }));
+        } catch (error) {
+            catchAxiosError(error);
+            setState(prev => ({
+                ...prev,
+                gameOver: true,
+                gameStarted: false
+            }));
+        }
+    };
 
     const restartGame = () => {
         setStatus("idle");
     };
+
+    async function handleGameEnd() {
+        if (!isAuthenticated) {
+            return;
+        }
+
+        try {
+            const response = await customFetch.post('/api/submit/', {
+                score: state.score,
+                created_at: new Date(),
+                test_name: 'verbal-memory'
+            });
+            console.log(response);
+        } catch (err) {
+            catchAxiosError(err);
+        }
+    }
 
     return (
         <>
@@ -169,7 +190,7 @@ setState(prev => ({
                 {status === "idle" && (
                     <IntroScreen
                         title="Verbal Memory Test"
-                        description="Can you remember which words you've seen?"/>
+                        description="Can you remember which words you've seen?" />
                 )}
 
                 {status === "running" && (
@@ -187,7 +208,7 @@ setState(prev => ({
                             </button>
                         </div>
 
-                        <Hearts heartsLeft={state.lives}/>
+                        <Hearts heartsLeft={state.lives} />
                     </div>
                 )}
 
@@ -195,21 +216,22 @@ setState(prev => ({
                     <ResultsScreen
                         description={`Your final score: ${state.score}`}
                         handleRestart={restartGame}
+                        onGameEnd={handleGameEnd}
                     />
                 )}
             </TestArea>
 
-            <OtherTests currentId="verbal-memory"/>
-            <div className="game-container">
+            <OtherTests currentId="verbal-memory" />
+            {/* <div className="game-container">
                 {showStats && (
                     <>
-                        <GameStats gameName="verbal-memory"/>
+                        <GameStats gameName="verbal-memory" />
                         <button onClick={() => setShowStats(false)} className="start-button">
                             Hide Stats
                         </button>
                     </>
                 )}
-            </div>
+            </div> */}
         </>
     );
 };

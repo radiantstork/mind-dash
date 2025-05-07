@@ -9,6 +9,8 @@ import SubmitButton from "../../components/SubmitButton/SubmitButton.tsx";
 import OtherTests from "../../components/OtherTests/OtherTests.tsx";
 import customFetch from "../../services/custom_fetch.ts";
 import GameStats from "../GameStats.tsx";
+import { useUserContext } from "../../context/UserContext.tsx";
+import { catchAxiosError } from "../../services/catch_axios_error.ts";
 
 const NumberMemoryTest: React.FC = () => {
     const [score, setScore] = useState(3);
@@ -18,6 +20,7 @@ const NumberMemoryTest: React.FC = () => {
     const [status, setStatus] = useState<"idle" | "input" | "over">("idle");
     const [showNumber, setShowNumber] = useState(false);
     const [showStats, setShowStats] = useState(true);
+    const { user: { isAuthenticated } } = useUserContext();
 
     const generateRandNum = (length: number): string => {
         let result = "";
@@ -63,12 +66,12 @@ const NumberMemoryTest: React.FC = () => {
                 nextLevel(score);
             } else {
                 setStatus("over");
-                await customFetch.post(
-                    '/api/number-memory/tests/',
-                    {
-                        score: score
-                    }
-                );
+                // await customFetch.post(
+                //     '/api/number-memory/tests/',
+                //     {
+                //         score: score
+                //     }
+                // );
             }
         }
     }
@@ -82,13 +85,30 @@ const NumberMemoryTest: React.FC = () => {
         setShowNumber(false);
     }
 
+    async function handleGameEnd() {
+        if (!isAuthenticated) {
+            return;
+        }
+
+        try {
+            const response = await customFetch.post('/api/submit/', {
+                score: score - 1,
+                created_at: new Date(),
+                test_name: 'number-memory'
+            });
+            console.log(response);
+        } catch (err) {
+            catchAxiosError(err);
+        }
+    }
+
     return (
         <>
             <TestArea onClick={startGame} clickable={status === "idle"}>
                 {status === "idle" && (
                     <IntroScreen
                         title="Number Memory Test"
-                        description="What is the longest number that you can remember?"/>
+                        description="What is the longest number that you can remember?" />
                 )}
 
                 {status === "input" && (
@@ -109,34 +129,36 @@ const NumberMemoryTest: React.FC = () => {
                                     value={userInput}
                                     onChange={(e) => setUserInput(e.target.value)}
                                     onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-                                    placeholder="Enter the number"/>
+                                    placeholder="Enter the number" />
 
-                                <SubmitButton onClick={handleSubmit}/>
+                                <SubmitButton onClick={handleSubmit} />
                             </>
                         )}
 
-                        <Hearts heartsLeft={lives}/>
+                        <Hearts heartsLeft={lives} />
                     </div>
                 )}
 
                 {status === "over" && (
                     <ResultsScreen
                         description={`You remembered at most: ${score - 1} ${score - 1 == 1 ? "digit" : "digits"}`}
-                        handleRestart={restartTest}/>
+                        handleRestart={restartTest}
+                        onGameEnd={handleGameEnd}
+                    />
                 )}
             </TestArea>
 
-            <OtherTests currentId="number-memory"/>
-            <div className="game-container">
+            <OtherTests currentId="number-memory" />
+            {/* <div className="game-container">
                 {showStats && (
                     <>
-                        <GameStats gameName="number-memory"/>
+                        <GameStats gameName="number-memory" />
                         <button onClick={() => setShowStats(false)} className="start-button">
                             Hide Stats
                         </button>
                     </>
                 )}
-            </div>
+            </div> */}
         </>
     );
 };

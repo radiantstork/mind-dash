@@ -51,6 +51,13 @@ const allTests: Test[] = [
         id: "verbal-memory"
     },
 
+    {
+        title: "Visual Memory Test",
+        description: "Can you remember more than 10 tiles at once?",
+        icon: "👁️",
+        id: "visual-memory"
+    },
+
     // { 
     //     title: "Sample Test",
     //     description: "Sample Description",
