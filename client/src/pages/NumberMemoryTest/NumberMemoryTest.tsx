@@ -156,6 +156,7 @@ const NumberMemoryTest: React.FC = () => {
                         <button onClick={() => setShowStats(false)} className="start-button">
                             Hide Stats
                         </button>
+                        </div>
                     </>
                 )}
             </div> */}
