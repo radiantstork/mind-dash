@@ -25,7 +25,7 @@ const ResultsScreen: React.FC<Props> = ({ description, handleRestart, onGameEnd 
                 Your Result
             </h1>
 
-            <p className={styles.description}>
+            <p className={styles.description} id="results-screen">
                 {description}
             </p>
 

@@ -3,6 +3,8 @@
 - Authors
 - Example: https://github.com/AndraRaco/App-Receipt-Scanner
 
+> De exemplu, puteți să creați un fișier README cu linkuri sau text pentru fiecare item de mai sus
+
 
 ### Cerinte (de inclus si dezvoltat in documentatie)
 - [ ] Live demo pentru aplicația dezvoltată.
@@ -22,11 +24,9 @@ La final, doresc sa prezint diagrama conceptuala a aplicatiei (fara tabelele gen
 - [x] user stories (minim 10), backlog creation - 2 pct
 - [x] diagrame (d. ex. diagrame UML, workflow) - 1 pct
 - [x] source control cu git (branch creation, merge/rebase, pull requests, minim 10 commits) - 2 pct
-- [x] teste automate - 2 pct
+- [ ] teste automate - 2 pct
 - [ ] raportare bug si rezolvare cu pull request - 1 pct
-- [x] comentarii cod si respectarea code standard - 1 pct
+- [ ] comentarii cod si respectarea code standard - 1 pct
 - [ ] design patterns - 1 pct
 - [ ] prompt engineering: documentarea folosirii toolurilor de AI in timpul dezvoltarii software (d. ex. GitHub Copilot, chatGPT, Microsoft Copilot) - 2 pct
 - [ ] **raport individual**
-
-> De exemplu, puteți să creați un fișier README cu linkuri sau text pentru fiecare item de mai sus

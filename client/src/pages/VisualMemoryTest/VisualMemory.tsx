@@ -7,6 +7,7 @@ import ResultsScreen from '../../components/ResultsScreen/ResultsScreen';
 import customFetch from '../../services/custom_fetch';
 import { useUserContext } from '../../context/UserContext';
 import { catchAxiosError } from '../../services/catch_axios_error';
+import { RequestBody, VisualMemoryPayload } from '../../components/Score';
 
 type TileState = {
   isPattern: boolean;
@@ -274,12 +275,9 @@ const VisualMemory = () => {
       return;
     }
 
+    const generator = new RequestBody(new VisualMemoryPayload());
     try {
-      const response = await customFetch.post('/api/submit/', {
-        score: gameState.level - 1,
-        created_at: new Date(),
-        test_name: 'visual-memory'
-      });
+      const response = await customFetch.post('/api/submit/', generator.getBody({level: gameState.level}));
       console.log(response);
     } catch (err) {
       catchAxiosError(err);

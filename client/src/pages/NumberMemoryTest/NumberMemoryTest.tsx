@@ -10,9 +10,10 @@ import OtherTests from "../../components/OtherTests/OtherTests.tsx";
 import customFetch from "../../services/custom_fetch.ts";
 import { useUserContext } from "../../context/UserContext.tsx";
 import { catchAxiosError } from "../../services/catch_axios_error.ts";
+import { NumberMemoryPayload, RequestBody } from "../../components/Score.ts";
 
 const NumberMemoryTest: React.FC = () => {
-    const [score, setScore] = useState(3);
+    const [level, setLevel] = useState(3);
     const [lives, setLives] = useState(3);
     const [number, setNumber] = useState("");
     const [userInput, setUserInput] = useState("");
@@ -29,7 +30,7 @@ const NumberMemoryTest: React.FC = () => {
     };
 
     const startGame = () => {
-        setScore(1);
+        setLevel(1);
         setLives(3);
         setStatus("input");
         const newNum = generateRandNum(1);
@@ -55,13 +56,13 @@ const NumberMemoryTest: React.FC = () => {
 
     const handleSubmit = async () => {
         if (userInput === number) {
-            const next = score + 1;
-            setScore(next);
+            const next = level + 1;
+            setLevel(next);
             nextLevel(next);
         } else {
             if (lives > 1) {
                 setLives(prev => prev - 1);
-                nextLevel(score);
+                nextLevel(level);
             } else {
                 setStatus("over");
                 // await customFetch.post(
@@ -76,7 +77,7 @@ const NumberMemoryTest: React.FC = () => {
 
     const restartTest = () => {
         setStatus("idle");
-        setScore(1);
+        setLevel(1);
         setLives(3);
         setNumber("");
         setUserInput("");
@@ -88,12 +89,9 @@ const NumberMemoryTest: React.FC = () => {
             return;
         }
 
+        const generator = new RequestBody(new NumberMemoryPayload())
         try {
-            const response = await customFetch.post('/api/submit/', {
-                score: score - 1,
-                created_at: new Date(),
-                test_name: 'number-memory'
-            });
+            const response = await customFetch.post('/api/submit/', generator.getBody({ level }));
             console.log(response);
         } catch (err) {
             catchAxiosError(err);
@@ -139,7 +137,7 @@ const NumberMemoryTest: React.FC = () => {
 
                 {status === "over" && (
                     <ResultsScreen
-                        description={`You remembered at most: ${score - 1} ${score - 1 == 1 ? "digit" : "digits"}`}
+                        description={`You remembered at most: ${level - 1} ${level - 1 == 1 ? "digit" : "digits"}`}
                         handleRestart={restartTest}
                         onGameEnd={handleGameEnd}
                     />

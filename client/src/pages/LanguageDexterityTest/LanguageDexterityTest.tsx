@@ -12,6 +12,7 @@ import OtherTests from "../../components/OtherTests/OtherTests.tsx";
 import { useUserContext } from "../../context/UserContext.tsx";
 import customFetch from "../../services/custom_fetch.ts";
 import { catchAxiosError } from "../../services/catch_axios_error.ts";
+import { LanguageDexterityPayload, RequestBody } from "../../components/Score.ts";
 
 const WORD_SET: Set<string> = new Set(
     words.split("\n").map(w => w.trim().toLowerCase())
@@ -29,7 +30,7 @@ type GameStatus = "idle" | "running" | "over";
 const LanguageDexterityTest: React.FC = () => {
     const [status, setStatus] = useState<GameStatus>("idle");
     const [substring, setSubstring] = useState("");
-    const [score, setScore] = useState(0);
+    const [level, setLevel] = useState(0);
     const [lives, setLives] = useState(3);
     const [input, setInput] = useState("");
     const [timeLeft, setTimeLeft] = useState(0);
@@ -41,7 +42,7 @@ const LanguageDexterityTest: React.FC = () => {
 
     useEffect(() => {
         if (status === "running") {
-            setScore(0);
+            setLevel(0);
             setLives(3);
             setUsedWords(new Set());
             startNewRound();
@@ -116,7 +117,7 @@ const LanguageDexterityTest: React.FC = () => {
             return;
         }
 
-        setScore(score + 1);
+        setLevel(level + 1);
         setUsedWords(new Set(usedWords).add(playerWord));
         clearTimer();
         startNewRound();
@@ -135,12 +136,9 @@ const LanguageDexterityTest: React.FC = () => {
             return;
         }
 
+        const generator = new RequestBody(new LanguageDexterityPayload())
         try {
-            const response = await customFetch.post('/api/submit/', {
-                score: score,
-                created_at: new Date(),
-                test_name: 'language-dexterity'
-            });
+            const response = await customFetch.post('/api/submit/', generator.getBody({ level }));
             console.log(response);
         } catch (err) {
             catchAxiosError(err);
@@ -174,14 +172,14 @@ const LanguageDexterityTest: React.FC = () => {
                         <Hearts heartsLeft={lives} />
 
                         <p className={styles.currentScore}>
-                            Score: {score}
+                            Score: {level}
                         </p>
                     </div>
                 )}
 
                 {status === "over" && (
                     <ResultsScreen
-                        description={`You lasted: ${score} ${score == 1 ? "word" : "words"}`}
+                        description={`You lasted: ${level} ${level == 1 ? "word" : "words"}`}
                         handleRestart={restartTest}
                         onGameEnd={handleGameEnd}
                     />

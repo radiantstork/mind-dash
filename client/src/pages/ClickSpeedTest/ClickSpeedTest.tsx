@@ -9,6 +9,7 @@ import OtherTests from "../../components/OtherTests/OtherTests.tsx";
 import { useUserContext } from "../../context/UserContext.tsx";
 import { catchAxiosError } from "../../services/catch_axios_error.ts";
 import customFetch from "../../services/custom_fetch.ts";
+import { ClickSpeedPayload, RequestBody } from "../../components/Score.ts";
 
 const ClickSpeedTest: React.FC = () => {
     const [clicks, setClicks] = useState<number>(0);
@@ -49,15 +50,15 @@ const ClickSpeedTest: React.FC = () => {
             return;
         }
         
+        const generator = new RequestBody(new ClickSpeedPayload())
         try {
             if (elapsedTime === null) {
                 throw new Error("System error: Elapsed time is null");
             }
-            const response = await customFetch.post('/api/submit/', {
-                score: Math.floor((clicks / elapsedTime) * 100),
-                created_at: new Date(),
-                test_name: 'click-speed'
-            });
+            const response = await customFetch.post('/api/submit/', generator.getBody({
+                clicks,
+                elapsed_time: elapsedTime
+            }));
             console.log(response);
         } catch (err) {
             catchAxiosError(err);

@@ -9,6 +9,7 @@ import OtherTests from "../../components/OtherTests/OtherTests.tsx";
 import { useUserContext } from "../../context/UserContext.tsx";
 import { catchAxiosError } from "../../services/catch_axios_error.ts";
 import customFetch from "../../services/custom_fetch.ts";
+import { ColorMemoryPaylaod, RequestBody } from "../../components/Score.ts";
 
 type Color = "red" | "blue" | "green" | "yellow" | "orange" | "purple" | "pink";
 
@@ -37,7 +38,7 @@ const shuffle = <T,>(arr: T[]): T[] => {
 
 const ColorMemoryTest: React.FC = () => {
     const [status, setStatus] = useState<"idle" | "showing" | "input" | "over">("idle");
-    const [score, setScore] = useState<number>(1);
+    const [level, setLevel] = useState<number>(1);
     const [sequence, setSequence] = useState<Color[]>([]);
     const [userInput, setUserInput] = useState<Color[]>([]);
     const [hearts, setHearts] = useState<number>(3);
@@ -45,17 +46,17 @@ const ColorMemoryTest: React.FC = () => {
     const [clickedColors, setClickedColors] = useState<Set<Color>>(new Set());
     const [clickLocked, setClickLocked] = useState<boolean>(false);
     const timers = useRef<number[]>([]);
-    const availableColors: Color[] = ALL_COLORS.slice(0, Math.min(score, ALL_COLORS.length));
+    const availableColors: Color[] = ALL_COLORS.slice(0, Math.min(level, ALL_COLORS.length));
     const { user: { isAuthenticated } } = useUserContext();
 
     useEffect(() => {
         if (status !== "showing") return;
 
         let rawSequence: Color[];
-        if (score < 8) {
+        if (level < 8) {
             rawSequence = shuffle(availableColors).slice(0, availableColors.length);
         } else {
-            rawSequence = Array.from({ length: score }, () =>
+            rawSequence = Array.from({ length: level }, () =>
                 availableColors[Math.floor(Math.random() * availableColors.length)]
             );
         }
@@ -78,7 +79,7 @@ const ColorMemoryTest: React.FC = () => {
             const current = rawSequence[i];
             const previous = i > 0 ? rawSequence[i - 1] : null;
 
-            if (previous !== null && score >= 8 && i > 0 && current === previous) {
+            if (previous !== null && level >= 8 && i > 0 && current === previous) {
                 displaySequence.push("#f0f0f0");
             }
 
@@ -115,10 +116,10 @@ const ColorMemoryTest: React.FC = () => {
             timers.current.forEach(clearTimeout);
             timers.current = [];
         };
-    }, [status, score]);
+    }, [status, level]);
 
     const startTest = () => {
-        setScore(1);
+        setLevel(1);
         setHearts(3);
         setUserInput([]);
         setClickedColors(new Set());
@@ -132,9 +133,9 @@ const ColorMemoryTest: React.FC = () => {
     const handleColorClick = (color: Color) => {
         if (status !== "input" || clickLocked) return;
 
-        if (score < 8 && clickedColors.has(color)) return;
+        if (level < 8 && clickedColors.has(color)) return;
 
-        if (score < 8) {
+        if (level < 8) {
             setClickedColors(prev => new Set(prev).add(color));
         }
 
@@ -159,7 +160,7 @@ const ColorMemoryTest: React.FC = () => {
             }, 1000));
         } else if (updatedInput.length === sequence.length) {
             timers.current.push(window.setTimeout(() => {
-                setScore(prev => prev + 1);
+                setLevel(prev => prev + 1);
                 setUserInput([]);
                 setClickedColors(new Set());
                 setStatus("showing");
@@ -172,12 +173,11 @@ const ColorMemoryTest: React.FC = () => {
             return;
         }
 
+        const generator = new RequestBody(new ColorMemoryPaylaod())
         try {
-            const response = await customFetch.post('/api/submit/', {
-                score: score - 1,
-                created_at: new Date(),
-                test_name: 'color-memory'
-            });
+            const response = await customFetch.post('/api/submit/', generator.getBody({
+                level: level - 1,
+            }));
             console.log(response);
         } catch (err) {
             catchAxiosError(err);
@@ -229,7 +229,7 @@ const ColorMemoryTest: React.FC = () => {
 
                 {status === "over" && (
                     <ResultsScreen
-                        description={`You remembered at most: ${score - 1} ${score - 1 === 1 ? "color" : "colors"}`}
+                        description={`You remembered at most: ${level - 1} ${level - 1 === 1 ? "color" : "colors"}`}
                         handleRestart={restartTest}
                         onGameEnd={handleGameEnd}
                     />

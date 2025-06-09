@@ -15,7 +15,7 @@ export interface Word {
 export interface VerbalMemoryGameState {
   seenWords: string[];
   currentWord: string;
-  score: number;
+  level: number;
   lives: number;
   gameStarted: boolean;
   gameOver: boolean;

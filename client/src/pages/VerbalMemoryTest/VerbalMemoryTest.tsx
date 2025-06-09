@@ -9,11 +9,11 @@ import Hearts from "../../components/Hearts/Hearts.tsx";
 import OtherTests from "../../components/OtherTests/OtherTests.tsx";
 
 import words from "../words.txt?raw";
-import GameStats from "../GameStats.tsx";
 import customFetch from "../../services/custom_fetch.ts";
 import { VerbalMemoryGameState } from "../../types/games.ts";
 import { useUserContext } from "../../context/UserContext.tsx";
 import { catchAxiosError } from "../../services/catch_axios_error.ts";
+import { RequestBody, VerbalMemoryPayload } from "../../components/Score.ts";
 
 const MAX_SCORE = 5000;
 const BATCH_SIZE = 50;
@@ -28,15 +28,13 @@ const VerbalMemoryTest: React.FC = () => {
     const [state, setState] = useState<VerbalMemoryGameState>({
         seenWords: [],
         currentWord: '',
-        score: 0,
+        level: 0,
         lives: 2,
         gameStarted: false,
         gameOver: false,
         loading: false,
         highScores: []
     });
-    const [showStats, setShowStats] = useState(true);
-
     const [wordPool, setWordPool] = useState<string[]>([]);
     const [usedWords, setUsedWords] = useState<Set<string>>(new Set());
 
@@ -89,10 +87,10 @@ const VerbalMemoryTest: React.FC = () => {
         const correct = hasSeen === alreadySeen;
 
         if (correct) {
-            const newScore = state.score + 1;
+            const newScore = state.level + 1;
             setState(prev => ({
                 ...prev,
-                score: newScore
+                level: newScore
             }));
             if (newScore >= MAX_SCORE) {
                 setStatus("over");
@@ -129,7 +127,7 @@ const VerbalMemoryTest: React.FC = () => {
         setState(prev => ({
             ...prev,
             seenWords: [],
-            score: 0,
+            level: 0,
             lives: 3
         }))
 
@@ -172,12 +170,9 @@ const VerbalMemoryTest: React.FC = () => {
             return;
         }
 
+        const generator = new RequestBody(new VerbalMemoryPayload())
         try {
-            const response = await customFetch.post('/api/submit/', {
-                score: state.score,
-                created_at: new Date(),
-                test_name: 'verbal-memory'
-            });
+            const response = await customFetch.post('/api/submit/', generator.getBody({level: state.level}));
             console.log(response);
         } catch (err) {
             catchAxiosError(err);
@@ -195,7 +190,7 @@ const VerbalMemoryTest: React.FC = () => {
 
                 {status === "running" && (
                     <div className={styles.container}>
-                        <p className={styles.score}>Score: {state.score}</p>
+                        <p className={styles.score}>Score: {state.level}</p>
 
                         <h1 className={styles.word}>{state.currentWord}</h1>
 
@@ -214,7 +209,7 @@ const VerbalMemoryTest: React.FC = () => {
 
                 {status === "over" && (
                     <ResultsScreen
-                        description={`Your final score: ${state.score}`}
+                        description={`Your final score: ${state.level}`}
                         handleRestart={restartGame}
                         onGameEnd={handleGameEnd}
                     />

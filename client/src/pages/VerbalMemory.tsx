@@ -9,7 +9,7 @@ const VerbalMemory: React.FC = () => {
   const [state, setState] = useState<VerbalMemoryGameState>({
     seenWords: [],
     currentWord: '',
-    score: 0,
+    level: 0,
     lives: 2,
     gameStarted: false,
     gameOver: false,
@@ -40,7 +40,7 @@ const VerbalMemory: React.FC = () => {
     setState({
       seenWords: [],
       currentWord: '',
-      score: 0,
+      level: 0,
       lives: 2,
       gameStarted: true,
       gameOver: false,
@@ -59,7 +59,7 @@ const VerbalMemory: React.FC = () => {
   if (isCorrect) {
     setState(prev => ({
       ...prev,
-      score: prev.score + 1,
+      level: prev.level + 1,
       seenWords: prev.seenWords.includes(prev.currentWord)
         ? prev.seenWords
         : [...prev.seenWords, prev.currentWord]
@@ -84,7 +84,7 @@ const VerbalMemory: React.FC = () => {
       const response = await customFetch.post(
           '/api/verbal-memory/tests/',
           {
-        score: state.score}
+        score: state.level}
       );
 
       setState(prev => ({
@@ -138,7 +138,7 @@ const VerbalMemory: React.FC = () => {
       {state.gameStarted && !state.gameOver && (
         <div className="game-active-screen">
           <div className="score-display">
-            <p>Score: <span className="score-value">{state.score}</span></p>
+            <p>Score: <span className="score-value">{state.level}</span></p>
             <p>Lives: <span className="level-value">{state.lives}</span></p>
           </div>
 
@@ -171,7 +171,7 @@ const VerbalMemory: React.FC = () => {
         <div className="game-over-screen">
           <h3 className="game-over-title">Game Over!</h3>
           <div className="results-summary">
-            <p>Your score: <span className="final-score">{state.score}</span></p>
+            <p>Your score: <span className="final-score">{state.level}</span></p>
           </div>
 
           <button
