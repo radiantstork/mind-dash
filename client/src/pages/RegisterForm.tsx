@@ -118,13 +118,14 @@ export default function RegisterForm() {
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit} data-testid="register-form">
 
       <Form.Group className="mb-3">
-        <Form.Label>Username</Form.Label>
+        <Form.Label htmlFor='username'>Username</Form.Label>
         <Form.Control
           type="text"
           name="username"
+          id='username'
           value={formData.username}
           onChange={handleChange}
           isInvalid={!!errors.username}
@@ -135,10 +136,11 @@ export default function RegisterForm() {
       </Form.Group>
 
       <Form.Group className="mb-3">
-        <Form.Label>Password</Form.Label>
+        <Form.Label htmlFor='password'>Password</Form.Label>
         <Form.Control
           type="password"
           name="password"
+          id='password'
           value={formData.password}
           onChange={handleChange}
           isInvalid={!!errors.password}
@@ -149,20 +151,21 @@ export default function RegisterForm() {
       </Form.Group>
 
       <Form.Group className="mb-3">
-        <Form.Label>Confirm Password</Form.Label>
+        <Form.Label htmlFor='password-confirm'>Confirm Password</Form.Label>
         <Form.Control
           type="password"
           name="confirmPassword"
           value={formData.confirmPassword}
           onChange={handleChange}
           isInvalid={!!errors.confirmPassword}
+          id='password-confirm'
         />
         <Form.Control.Feedback type="invalid">
           {errors.confirmPassword}
         </Form.Control.Feedback>
       </Form.Group>
 
-      <Button variant="primary" type="submit" className="w-100" disabled={loading}>
+      <Button variant="primary" type="submit" name='register' className="w-100" disabled={loading}>
         {loading ? "Loading..." : "Register"}
       </Button>
     </Form>

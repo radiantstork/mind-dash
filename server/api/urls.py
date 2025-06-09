@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import LoginView, RegisterView, LogoutView, ProtectedDataView, GameResultCreateView, get_csrf_token
+from .views import LoginView, RegisterView, LogoutView, ProtectedDataView, GameResultCreateView, get_csrf_token, UserStatisticsView
 from . import views
 
 urlpatterns = [
@@ -21,4 +21,5 @@ urlpatterns = [
     path('protected-data/', ProtectedDataView.as_view(), name='protected-data'),
     path('csrf/', get_csrf_token),
     path('submit/', GameResultCreateView.as_view(), name='game-results-create'),
+    path('user-statistics/', UserStatisticsView.as_view(), name='user-statistics'),
 ]

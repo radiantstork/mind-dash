@@ -42,10 +42,11 @@ const Header = () => {
         <img src={logo} alt="Logo" />
         <span>Mind <strong>Dash</strong></span>
       </Link>
+      <Link to="/statistics">View Statistics</Link>
       <div className={styles.authButtons}>
         {!user.isAuthenticated
           ? <>
-            <Link to="/signup" className={styles.btnOutline}>Sign Up</Link>
+            <Link to="/register" className={styles.btnOutline}>Sign Up</Link>
             <Link to="/login" className={styles.btnSolid}>Log In</Link>
           </>
           : <button onClick={handleLogout} className={styles.btnOutline}>

@@ -49,8 +49,9 @@ const TimePerceptionTest: React.FC = () => {
                 throw new Error("System error: Wait time is null");
             }
 
+            const actual_time = Math.floor(Math.abs(score - waitTime) * 100);
             const response = await customFetch.post('/api/submit/', {
-                score: Math.floor(Math.abs(score - waitTime) * 100),
+                score: Math.max(10000 - actual_time, 0),
                 created_at: new Date(),
                 test_name: 'time-perception'
             });

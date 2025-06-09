@@ -1,0 +1,19 @@
+.statistics-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.welcome-message {
+  font-size: 1.1em;
+  margin-bottom: 24px;
+  color: #666;
+}
+
+.ant-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ant-table {
+  margin-top: 16px;
+}

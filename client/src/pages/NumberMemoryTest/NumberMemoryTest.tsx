@@ -8,7 +8,6 @@ import Hearts from "../../components/Hearts/Hearts.tsx";
 import SubmitButton from "../../components/SubmitButton/SubmitButton.tsx";
 import OtherTests from "../../components/OtherTests/OtherTests.tsx";
 import customFetch from "../../services/custom_fetch.ts";
-import GameStats from "../GameStats.tsx";
 import { useUserContext } from "../../context/UserContext.tsx";
 import { catchAxiosError } from "../../services/catch_axios_error.ts";
 
@@ -19,7 +18,6 @@ const NumberMemoryTest: React.FC = () => {
     const [userInput, setUserInput] = useState("");
     const [status, setStatus] = useState<"idle" | "input" | "over">("idle");
     const [showNumber, setShowNumber] = useState(false);
-    const [showStats, setShowStats] = useState(true);
     const { user: { isAuthenticated } } = useUserContext();
 
     const generateRandNum = (length: number): string => {

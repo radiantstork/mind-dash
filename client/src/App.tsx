@@ -19,6 +19,7 @@ import VerbalMemoryTest from './pages/VerbalMemoryTest/VerbalMemoryTest.tsx';
 import VisualMemory from './pages/VisualMemoryTest/VisualMemory.tsx';
 import { ToastContainer } from 'react-toastify';
 import RegisterPage from './pages/RegisterPage.tsx';
+import StatisticsPage from './pages/Statistics.tsx';
 
 function App() {
   return (<div>
@@ -48,6 +49,7 @@ function App() {
         <Route path="/color-memory" element={<ColorMemoryTest />} />
         <Route path="/verbal-memory" element={<VerbalMemoryTest />} />
         <Route path="/visual-memory" element={<VisualMemory />} />
+        <Route path="/statistics" element={<StatisticsPage />} />
       </Routes>
     </DarkTheme>
   </div>

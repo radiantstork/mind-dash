@@ -22,6 +22,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from .serializers import GameResultSerializer
+from django.db.models import Count, Avg
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .models import GameResult
 
 
 def index(_):
@@ -108,6 +112,75 @@ class GameResultCreateView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+from django.db.models import Avg, Max, Min, Count
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from .models import GameResult
+
+class UserStatisticsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        
+        # Get all test names available
+        test_names = GameResult.objects.values_list('test_name', flat=True).distinct()
+        
+        stats = {}
+        for test_name in test_names:
+            # User's stats
+            user_stats = GameResult.objects.filter(
+                user=user,
+                test_name=test_name
+            ).aggregate(
+                user_avg=Avg('score'),
+                user_max=Max('score'),
+                user_min=Min('score'),
+                user_count=Count('id')
+            )
+            
+            # Global stats
+            global_stats = GameResult.objects.filter(
+                test_name=test_name
+            ).aggregate(
+                global_avg=Avg('score'),
+                global_max=Max('score'),
+                global_min=Min('score'),
+                global_count=Count('id')
+            )
+            
+            stats[test_name] = {
+                'user': user_stats,
+                'global': global_stats,
+                'user_percentile': self.calculate_percentile(user, test_name)
+            }
+        
+        print(stats)
+        return Response(stats)
+    
+    def calculate_percentile(self, user, test_name):
+        # Get all scores for this test
+        scores = list(GameResult.objects.filter(
+            test_name=test_name
+        ).values_list('score', flat=True))
+        
+        if not scores:
+            return None
+            
+        user_scores = GameResult.objects.filter(
+            user=user,
+            test_name=test_name
+        ).values_list('score', flat=True)
+        
+        if not user_scores:
+            return None
+            
+        user_best = max(user_scores)
+        scores_sorted = sorted(scores)
+        percentile = (scores_sorted.index(user_best) / len(scores_sorted)) * 100
+        return round(percentile, 2)
 
 # class NumberMemoryTestView(APIView):
 #     permission_classes = [AllowAny]
