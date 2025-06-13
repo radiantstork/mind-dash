@@ -11,6 +11,7 @@ import customFetch from "../../services/custom_fetch.ts";
 import { useUserContext } from "../../context/UserContext.tsx";
 import { catchAxiosError } from "../../services/catch_axios_error.ts";
 import { NumberMemoryPayload, RequestBody } from "../../components/Score.ts";
+import { toast } from "react-toastify";
 
 const NumberMemoryTest: React.FC = () => {
     const [level, setLevel] = useState(3);
@@ -20,6 +21,7 @@ const NumberMemoryTest: React.FC = () => {
     const [status, setStatus] = useState<"idle" | "input" | "over">("idle");
     const [showNumber, setShowNumber] = useState(false);
     const { user: { isAuthenticated } } = useUserContext();
+    const [showInterval, setShowInterval] = useState<NodeJS.Timeout | null>();
 
     const generateRandNum = (length: number): string => {
         let result = "";
@@ -29,18 +31,27 @@ const NumberMemoryTest: React.FC = () => {
         return result;
     };
 
-    const startGame = () => {
-        setLevel(1);
-        setLives(3);
-        setStatus("input");
-        const newNum = generateRandNum(1);
-        setNumber(newNum);
-        setUserInput("");
-        setShowNumber(true);
+    const handleAreaClick = () => {
+        if (status === 'idle') {
+            setLevel(1);
+            setLives(3);
+            setStatus("input");
+            const newNum = generateRandNum(1);
+            setNumber(newNum);
+            setUserInput("");
+            setShowNumber(true);
 
-        setTimeout(() => {
+            setTimeout(() => {
+                setShowNumber(false);
+            }, 1000);
+            return;
+        }
+
+        if (status === 'input' && showInterval) {
+            clearInterval(showInterval);
+            setShowInterval(null);
             setShowNumber(false);
-        }, 1000);
+        }
     }
 
     const nextLevel = (newLevel: number) => {
@@ -49,12 +60,20 @@ const NumberMemoryTest: React.FC = () => {
         setUserInput("");
         setShowNumber(true);
 
-        setTimeout(() => {
-            setShowNumber(false);
-        }, newLevel * 1000);
+        setShowInterval(
+            setTimeout(() => {
+                setShowNumber(false);
+                setShowInterval(null);
+            }, newLevel * 1000)
+        );
     }
 
     const handleSubmit = async () => {
+        console.log(userInput);
+        if (userInput.length === 0) {
+            toast.error('Input length must not be empty');
+            return;
+        }
         if (userInput === number) {
             const next = level + 1;
             setLevel(next);
@@ -100,7 +119,7 @@ const NumberMemoryTest: React.FC = () => {
 
     return (
         <>
-            <TestArea onClick={startGame} clickable={status === "idle"}>
+            <TestArea onClick={handleAreaClick} clickable={status === "idle" || status === 'input'}>
                 {status === "idle" && (
                     <IntroScreen
                         title="Number Memory Test"
@@ -110,7 +129,15 @@ const NumberMemoryTest: React.FC = () => {
                 {status === "input" && (
                     <div className={styles.sndScreen}>
                         {showNumber ? (
-                            <h1 className={styles.number}>
+                            <h1 className={styles.number}
+                                onKeyDown={(e) => {
+                                    console.log(e.key);
+                                    if (e.key === 'Enter') {
+                                        console.log("clicked");
+                                        handleAreaClick();
+                                    }
+                                }}
+                            >
                                 {number}
                             </h1>
                         ) : (
@@ -122,6 +149,7 @@ const NumberMemoryTest: React.FC = () => {
                                 <input
                                     className={styles.input}
                                     type="text"
+                                    autoFocus={status === 'input'}
                                     value={userInput}
                                     onChange={(e) => setUserInput(e.target.value)}
                                     onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
