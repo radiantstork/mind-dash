@@ -3,7 +3,7 @@
 > De exemplu, puteți să creați un fișier README cu linkuri sau text pentru fiecare item de mai sus
 
 #### Demo
-- Pentru inceput, ca sa va faceti o idee despre ce consta acest proiect, uitati-va pe acest [demo](#).
+- Pentru inceput, ca sa va faceti o idee despre ce consta acest proiect, uitati-va pe acest [demo](https://drive.google.com/file/d/1uwFgXXumnoubq2LGNEiiFmS07GvjfJaA/view?usp=drive_link).
 
 #### Trello
 - Pentru a consulta workflow-ul nostru, uitati-va pe sarcinile de pe Trello de [aici](https://trello.com/b/vMwyKZ0d/mind-dash).
@@ -26,10 +26,6 @@
 
 #### Prompt engineering documentation
 - Cititi documentatia [aici](./promt_engineering_documentation.pdf)
-
-#### Cerinte (de inclus si dezvoltat in documentatie)
-- [ ] Live demo pentru aplicația dezvoltată.
-- [ ] În plus, trebuie să salvați un demo offline (d. ex. în YouTube): faceți un screencast (vezi o lista de tooluri pentru screencasturi) înainte de prezentare SAU înregistrați prezentarea cu screensharing făcută laborantului (multe tooluri de remote meeting oferă această opțiune).
 
 
 ### Diagrame
