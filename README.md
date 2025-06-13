@@ -1,7 +1,5 @@
 # Mind Dash
 
-> De exemplu, puteți să creați un fișier README cu linkuri sau text pentru fiecare item de mai sus
-
 #### Demo
 - Pentru inceput, ca sa va faceti o idee despre ce consta acest proiect, uitati-va pe acest [demo](https://drive.google.com/file/d/1uwFgXXumnoubq2LGNEiiFmS07GvjfJaA/view?usp=drive_link).
 
