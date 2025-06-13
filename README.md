@@ -26,7 +26,7 @@ La final, doresc sa prezint diagrama conceptuala a aplicatiei (fara tabelele gen
 - [x] source control cu git (branch creation, merge/rebase, pull requests, minim 10 commits) - 2 pct
 - [ ] teste automate - 2 pct
 - [ ] raportare bug si rezolvare cu pull request - 1 pct
-- [ ] comentarii cod si respectarea code standard - 1 pct
-- [ ] design patterns - 1 pct
+- [x] comentarii cod si respectarea code standard - 1 pct
+- [x] design patterns - 1 pct
 - [ ] prompt engineering: documentarea folosirii toolurilor de AI in timpul dezvoltarii software (d. ex. GitHub Copilot, chatGPT, Microsoft Copilot) - 2 pct
 - [ ] **raport individual**

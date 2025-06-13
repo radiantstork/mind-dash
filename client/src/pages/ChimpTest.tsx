@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import '../ChimpTest.css';
-import { Tile } from "../types/games.ts";
+import { ChimpTestResult, Tile } from "../types/games.ts";
 import customFetch from "../services/custom_fetch.ts";
 import GameStats from "./GameStats.tsx";
 import ResultsScreen from '../components/ResultsScreen/ResultsScreen.tsx';
@@ -12,7 +12,7 @@ const ChimpTest: React.FC = () => {
   const [level, setLevel] = useState(4); // Start with 4 tiles
   const [tiles, setTiles] = useState<Tile[]>([]);
   const [currentNumber, setCurrentNumber] = useState(1);
-  // const [highScores, setHighScores] = useState<ChimpTestResult[]>([]);
+  const [highScores, setHighScores] = useState<ChimpTestResult[]>([]);
   const [hideNumbers, setHideNumbers] = useState(false);
   const [showStats, setShowStats] = useState(true);
   const { user: { isAuthenticated } } = useUserContext();
